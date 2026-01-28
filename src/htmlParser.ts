@@ -15,6 +15,7 @@ export interface HTMLElement {
   textStartPosition?: vscode.Position;
   textEndPosition?: vscode.Position;
   textContent?: string;
+  textNodes: { text: string; range: vscode.Range }[];
   parent?: HTMLElement;
   children: HTMLElement[];
   hasInlineStyle: boolean;
@@ -32,26 +33,26 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
   let root: HTMLElement | null = null;
 
   const handler: Partial<Handler> = {
-    onopentag(name, attribs) {
-      const startIndex = parser.startIndex;
+    onopentagname(name) {
+      // Calculate start index from end index to be more robust
+      // endIndex points to the last character of the tag name
+      const endIndex = parser.endIndex;
+      const startIndex = endIndex - name.length - 1;
       const position = document.positionAt(startIndex);
 
-      const styles = attribs.style ? parseStyle(attribs.style) : {};
-      const colors = extractColorProperties(styles);
+      const parent = elementStack.length > 0 ? elementStack[elementStack.length - 1] : undefined;
 
       const element: HTMLElement = {
         tagName: name,
-        attributes: attribs,
-        styles,
-        colors,
+        attributes: {},
+        styles: {},
+        colors: {},
         startPosition: position,
         endPosition: position,
-        textStartPosition: undefined,
-        textEndPosition: undefined,
-        textContent: undefined,
-        parent: elementStack.length > 0 ? elementStack[elementStack.length - 1] : undefined,
+        textNodes: [],
+        parent: parent,
         children: [],
-        hasInlineStyle: !!attribs.style,
+        hasInlineStyle: false,
       };
 
       if (element.parent) {
@@ -64,15 +65,64 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
       elements.push(element);
     },
 
+    onopentag(name, attribs) {
+      if (elementStack.length > 0) {
+        const element = elementStack[elementStack.length - 1];
+        element.attributes = attribs;
+        element.styles = attribs.style ? parseStyle(attribs.style) : {};
+        element.hasInlineStyle = !!attribs.style;
+
+        const colors = extractColorProperties(element.styles);
+
+        // Inherit colors from parent if not defined on the element
+        // Priority:
+        // 1. Element's own 'color'
+        // 2. Element's own 'background-color' (treated as color for highlighting)
+        // 3. Parent's 'color' (inherited text color)
+        // 4. Parent's 'background-color' ?? NO. Background color is NOT inherited as text color.
+
+        // The issue:
+        // <section style="background-color: purple; color: teal">
+        //   <h2>Text</h2>
+        // </section>
+        // h2 has NO styles.
+        // It inherits 'color': teal.
+        // It does NOT inherit 'background-color': purple.
+        // So h2.colors.color should be 'teal'. h2.colors.backgroundColor should be undefined.
+
+        // In my previous code:
+        // element.colors = {
+        //   color: colors.color || element.parent?.colors.color,
+        //   backgroundColor: colors.backgroundColor || element.parent?.colors.backgroundColor,
+        // };
+        // This line: `backgroundColor: ... || element.parent?.colors.backgroundColor` is WRONG for CSS inheritance!
+        // background-color is NOT inherited by default.
+
+        element.colors = {
+          color: colors.color || element.parent?.colors.color,
+          backgroundColor: colors.backgroundColor, // Do not inherit background color
+        };
+      }
+    },
+
     ontext(data) {
       if (elementStack.length > 0) {
         const currentElement = elementStack[elementStack.length - 1];
-        const startIndex = parser.startIndex;
-        const endIndex = parser.endIndex + 1;
+
+        // Calculate start index from end index to be more robust
+        // endIndex points to the last character of the text data
+        const endIndex = parser.endIndex;
+        const startIndex = endIndex - data.length + 1;
 
         const textStartPosition = document.positionAt(startIndex);
-        const textEndPosition = document.positionAt(endIndex);
+        // endIndex + 1 because VS Code Range is exclusive at the end
+        const textEndPosition = document.positionAt(endIndex + 1);
+        const range = new vscode.Range(textStartPosition, textEndPosition);
 
+        // Add to text nodes
+        currentElement.textNodes.push({ text: data, range });
+
+        // Update legacy fields
         if (currentElement.textStartPosition === undefined) {
           currentElement.textContent = data;
           currentElement.textStartPosition = textStartPosition;

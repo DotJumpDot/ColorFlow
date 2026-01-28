@@ -4,6 +4,27 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-01-28
+
+### Added
+
+- **Color Inheritance Support**: Elements now correctly inherit `color` properties from parent elements following CSS rules
+- **Inherited Text Highlighting**: Elements without inline styles now have their text content highlighted with inherited colors
+
+### Fixed
+
+- **Word-Only Mode Missing Highlights**: Fixed issue where inherited text elements (like `<h2>` inside `<section>`) were not being highlighted in word-only mode
+- **Incorrect Color Inheritance**: Fixed bug where child elements incorrectly inherited `background-color` from parents (background colors are not inherited in CSS)
+- **Parent Color Overlapping**: Implemented range subtraction to prevent parent highlight colors from "bleeding" into child element areas
+- **Char-Range Mode Alignment**: Fixed offset calculation using `endIndex` for more robust positioning, preventing shifted highlights
+- **CRLF Line Ending Support**: Improved offset calculation to handle Windows CRLF (`\r\n`) line endings correctly
+
+### Changed
+
+- **Parser Logic**: Updated `onopentagname` event to calculate start positions from end indices for better accuracy
+- **Text Node Tracking**: Elements now track individual text nodes with precise ranges for better highlight control
+- **Highlight Priority**: Child element text colors now correctly take precedence over parent background colors
+
 ## [1.0.0] - 2026-01-28
 
 ### Added

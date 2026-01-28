@@ -22,15 +22,32 @@ export class DecorationManager {
     const decorationsByColor: Map<string, vscode.Range[]> = new Map();
 
     for (const element of elements) {
-      if (!element.hasInlineStyle) {
-        continue;
-      }
-
       const colorValue = element.colors.color || element.colors.backgroundColor;
 
       if (!colorValue) {
         continue;
       }
+
+      // For full-line mode, we only highlight the element that actually has the inline style
+      // to avoid redundant highlights of the same lines by children.
+      // For other modes, we want to highlight text nodes of children that inherit the color.
+      if (settings.highlightMode === "full-line" && !element.hasInlineStyle) {
+        continue;
+      }
+
+      // If the element has NO inline style but inherits a color, we should check if
+      // it's just inheriting the SAME color as its parent's text color.
+      // If it is, and we are in word-only mode, we might want to let the parent handle it
+      // OR we handle it here.
+      // However, the issue described is that "inherited text" is NOT highlighting.
+      // My previous fix for char-range handled inheritance by default because I iterate all elements.
+      // But wait, the loop `for (const element of elements)` iterates ALL elements, including children.
+
+      // The issue is likely precedence.
+      // If parent has background-color (purple) and child inherits color (teal).
+      // Parent highlights its background. Child highlights its text.
+      // If child is ON TOP of parent, child highlight should be visible.
+      // But if child is inheriting, `element.colors` might be populated.
 
       const backgroundColor = convertToRGBA(colorValue, settings.opacity);
 
@@ -74,19 +91,61 @@ export class DecorationManager {
         return ranges;
 
       case "word-only":
-        const textRange = getElementTextRange(element);
-        if (!textRange || !element.textContent) {
-          return [];
-        }
-        return this.getWordRanges(document, textRange, element.textContent);
+        return element.textNodes.flatMap((node) =>
+          this.getWordRanges(document, node.range, node.text)
+        );
 
       case "char-range":
       default:
-        const charRange = getElementTextRange(element);
-        if (!charRange) {
-          return [];
+        // If the element doesn't have its own inline style, it's inheriting.
+        // As requested: "dsadasdasdasdsadas #4ecdc4 this one should only apply at dsadas..."
+        // We only highlight the text nodes for inherited elements.
+        if (!element.hasInlineStyle) {
+          if (element.textNodes.length === 0) {
+            return [];
+          }
+          const charRanges: vscode.Range[] = [];
+          for (const node of element.textNodes) {
+            const trimmed = this.trimWhitespaceRange(document, node.range, node.text);
+            if (!trimmed.isEmpty) {
+              charRanges.push(trimmed);
+            }
+          }
+          return charRanges;
         }
-        return [this.trimWhitespaceRange(document, charRange, element.textContent || "")];
+
+        // If it HAS an inline style, we highlight the FULL range (tags included)
+        // and subtract all children to allow them to "overwrite" the parent color.
+        let currentRanges: vscode.Range[] = [getElementFullRange(element)];
+
+        const sortedChildren = [...element.children].sort(
+          (a, b) => document.offsetAt(a.startPosition) - document.offsetAt(b.startPosition)
+        );
+
+        for (const child of sortedChildren) {
+          const childRange = getElementFullRange(child);
+          const newRanges: vscode.Range[] = [];
+
+          for (const range of currentRanges) {
+            if (range.contains(childRange)) {
+              // Split the range around the child
+              const before = new vscode.Range(range.start, childRange.start);
+              const after = new vscode.Range(childRange.end, range.end);
+
+              if (!before.isEmpty) {
+                newRanges.push(before);
+              }
+              if (!after.isEmpty) {
+                newRanges.push(after);
+              }
+            } else {
+              newRanges.push(range);
+            }
+          }
+          currentRanges = newRanges;
+        }
+
+        return currentRanges;
     }
   }
 

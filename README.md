@@ -6,6 +6,12 @@
 
 Visualize inline CSS colors in HTML documents with configurable background highlighting.
 
+## Demo
+
+![Color Flow Demo](./assets/demo.gif)
+
+*Watch how Color Flow automatically highlights inline CSS colors in real-time as you type*
+
 ## Features
 
 - Color Flow automatically detects and highlights inline CSS colors in your documents
