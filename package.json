@@ -1,0 +1,119 @@
+{
+  "name": "color-flow",
+  "displayName": "Color Flow",
+  "description": "Visualize inline CSS colors in HTML documents with configurable background highlighting",
+  "version": "0.1.0",
+  "publisher": "DotJumpDot",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "color",
+    "css",
+    "html",
+    "highlight",
+    "visualize",
+    "inline-style",
+    "background",
+    "preview"
+  ],
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:php",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "colorFlow.openSettings",
+        "title": "Color Flow: Open Settings"
+      },
+      {
+        "command": "colorFlow.toggle",
+        "title": "Color Flow: Toggle Highlighting"
+      },
+      {
+        "command": "colorFlow.refresh",
+        "title": "Color Flow: Refresh Decorations"
+      }
+    ],
+    "configuration": {
+      "title": "Color Flow",
+      "properties": {
+        "colorFlow.opacity": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity of the background color highlight (0-1)"
+        },
+        "colorFlow.enableBorder": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable border around highlighted text"
+        },
+        "colorFlow.borderColor": {
+          "type": "string",
+          "default": "currentColor",
+          "description": "Border color for highlighted text (e.g., '#000000', 'red', 'rgba(0,0,0,0.5)')"
+        },
+        "colorFlow.borderRadius": {
+          "type": "string",
+          "default": "0px",
+          "description": "Border radius for highlighted text (e.g., '2px', '4px', '8px')"
+        },
+        "colorFlow.highlightMode": {
+          "type": "string",
+          "enum": [
+            "full-line",
+            "word-only",
+            "char-range"
+          ],
+          "default": "char-range",
+          "enumDescriptions": [
+            "Highlight the entire line containing the element",
+            "Highlight from first non-space to last non-space character",
+            "Highlight the exact element text range"
+          ],
+          "description": "Determines how much of the text to highlight"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "eslint": "^8.34.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "htmlparser2": "^9.0.0",
+    "tinycolor2": "^1.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DotJumpDot/Color-Flow.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DotJumpDot/Color-Flow/issues"
+  },
+  "homepage": "https://github.com/DotJumpDot/Color-Flow#readme"
+}
