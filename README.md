@@ -1,7 +1,5 @@
 <div align="center">
 
-![Color Flow Logo](https://img.shields.io/badge/🎨-Color%20Flow-blue)
-
 # 🌊 Color Flow
 
 **Visualize inline CSS colors in HTML documents with intelligent, configurable background highlighting**
@@ -16,6 +14,14 @@
 [VS Marketplace](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow) • [Changelog](CHANGELOG.md) • [API Docs](AGENTS.md) • [Report Issue](https://github.com/DotJumpDot/Color-Flow/issues)
 
 </div>
+
+---
+
+## 📺 Demo
+
+![Color Flow Demo](./assets/demo.gif)
+
+> Watch how Color Flow automatically highlights inline CSS colors in real-time as you type
 
 ---
 
@@ -34,14 +40,6 @@ Color Flow enhances your HTML development experience by automatically detecting 
 
 ---
 
-## 📺 Demo
-
-![Color Flow Demo](./assets/demo.gif)
-
-> Watch how Color Flow automatically highlights inline CSS colors in real-time as you type
-
----
-
 ## 📦 Extension Info
 
 | Property           | Value                                                                                        |
@@ -49,7 +47,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                                   |
 | **Publisher**      | DotJumpDot                                                                                   |
 | **Extension ID**   | `StringExtractor.color-flow`                                                                 |
-| **Version**        | 1.2.3                                                                                        |
+| **Version**        | 1.2.4                                                                                        |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow) |
 
 ---

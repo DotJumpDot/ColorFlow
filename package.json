@@ -2,7 +2,7 @@
   "name": "color-flow",
   "displayName": "Color Flow",
   "description": "Visualize inline CSS colors in HTML documents with configurable background highlighting",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "publisher": "StringExtractor",
   "icon": "assets/icon.png",
   "engines": {

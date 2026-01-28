@@ -4,6 +4,12 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.4] - 2026-01-28
+
+### Changed
+
+- **README Structure**: Reorganized README.md to place the Demo section above Features for better visual hierarchy and immediate visual preview of extension capabilities
+
 ## [1.2.3] - 2026-01-28
 
 ### Changed
