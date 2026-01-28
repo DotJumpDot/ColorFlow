@@ -177,14 +177,13 @@ function parseHTML() {
         // Inherit colors logic
         element.colors = {
           color: colors.color || element.parent?.colors.color,
-          backgroundColor: colors.backgroundColor, // Strict inheritance: no bg inheritance
+          backgroundColor: colors.backgroundColor || element.parent?.colors.backgroundColor,
         };
       }
     },
     ontext(data) {
       if (elementStack.length > 0) {
         const currentElement = elementStack[elementStack.length - 1];
-        if (data.trim().length === 0) return; // Skip empty whitespace for cleaner output
 
         const endIndex = parser.endIndex;
         const startIndex = endIndex - data.length + 1;
@@ -212,28 +211,35 @@ function parseHTML() {
   return elements;
 }
 
+function trimWhitespaceRange(range: Range, text: string): Range {
+  const trimmedLeft = text.trimStart();
+  const leadingWhitespaceCount = text.length - trimmedLeft.length;
+  const trimmedBoth = trimmedLeft.trimEnd();
+  const trailingWhitespaceCount = trimmedLeft.length - trimmedBoth.length;
+
+  const startOffset = document.offsetAt(range.start) + leadingWhitespaceCount;
+  const endOffset = document.offsetAt(range.end) - trailingWhitespaceCount;
+
+  if (startOffset >= endOffset) {
+    return new Range(range.start, range.start);
+  }
+
+  return new Range(document.positionAt(startOffset), document.positionAt(endOffset));
+}
+
 // --- COPIED LOGIC FROM decorationManager.ts (simplified) ---
 function getRangesForElement(element: HTMLElement, mode: string) {
   if (mode === "char-range") {
-    if (!element.hasInlineStyle) {
-      return element.textNodes.map(
-        (n) =>
-          `Text: "${n.text.trim()}" [${document.offsetAt(n.range.start)}-${document.offsetAt(n.range.end)}]`
-      );
+    const charRanges: string[] = [];
+    for (const node of element.textNodes) {
+      const trimmed = trimWhitespaceRange(node.range, node.text);
+      if (!trimmed.isEmpty) {
+        charRanges.push(
+          `Text: "${node.text.trim()}" [${document.offsetAt(trimmed.start)}-${document.offsetAt(trimmed.end)}]`
+        );
+      }
     }
-
-    // Full range subtraction logic
-    let currentRanges = [new Range(element.startPosition, element.endPosition)];
-    // Assume children are subtracted...
-    // For verify, just printing the element range and its children ranges to see if they overlap
-
-    return [
-      `Full Element: <${element.tagName}> [${document.offsetAt(element.startPosition)}-${document.offsetAt(element.endPosition)}]`,
-      ...element.children.map(
-        (c) =>
-          `  - Subtract Child: <${c.tagName}> [${document.offsetAt(c.startPosition)}-${document.offsetAt(c.endPosition)}]`
-      ),
-    ];
+    return charRanges;
   }
   return [];
 }
@@ -265,27 +271,22 @@ const h2 = elements.find(
 );
 if (h2) {
   console.log(`H2 Colors: color=${h2.colors.color}, bg=${h2.colors.backgroundColor}`);
-  if (h2.colors.color && !h2.colors.backgroundColor) {
-    console.log("PASS: H2 inherited color but NOT background-color.");
+  if (h2.colors.color && h2.colors.backgroundColor) {
+    console.log("PASS: H2 inherited both color and background-color.");
   } else {
     console.error("FAIL: Inheritance logic is wrong!");
   }
 }
 
-console.log("\n--- CHECKING RANGE SUBTRACTION (Div) ---");
+console.log("\n--- CHECKING WHITESPACE SKIPPING (Div) ---");
 const div = elements.find((e) => e.tagName === "div");
 if (div) {
   const ranges = getRangesForElement(div, "char-range");
-  console.log(ranges.join("\n"));
-  // Verify offsets
-  const divStart = document.offsetAt(div.startPosition);
-  const firstP = div.children[0];
-  const pStart = document.offsetAt(firstP.startPosition);
-
-  // Check if div starts before p
-  if (divStart < pStart) {
-    console.log(`PASS: Div starts at ${divStart}, Child P starts at ${pStart}`);
+  console.log("Ranges for div:", ranges);
+  const containsWhitespaceOnly = ranges.some((r) => r.includes('Text: ""'));
+  if (!containsWhitespaceOnly) {
+    console.log("PASS: No whitespace-only ranges found for div.");
   } else {
-    console.error(`FAIL: Div start ${divStart} is not before P start ${pStart}`);
+    console.error("FAIL: Found whitespace-only ranges in div!");
   }
 }

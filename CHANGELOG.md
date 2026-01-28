@@ -4,6 +4,24 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.1] - 2026-01-28
+
+### Fixed
+
+- **Whitespace Highlighting**: Fixed issue in `char-range` mode where whitespace between tags (like newlines and indentation) was being highlighted
+- **Empty Text Node Handling**: Improved `trimWhitespaceRange` to correctly return empty ranges for nodes containing only whitespace
+
+## [1.2.0] - 2026-01-28
+
+### Changed
+
+- **Simplified Char-Range Mode**: Re-implemented `char-range` mode to only highlight trimmed text content for all elements, removing tag highlighting for elements with inline styles
+- **Background Color Inheritance**: Updated parser to allow children to inherit `background-color` from parent elements, ensuring consistent highlighting across nested elements
+
+### Fixed
+
+- **Nested Element Inheritance**: Fixed behavior where nested elements without their own styles would not show parent background colors in certain highlight modes
+
 ## [1.1.0] - 2026-01-28
 
 ### Added

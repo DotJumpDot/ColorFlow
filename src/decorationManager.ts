@@ -97,55 +97,14 @@ export class DecorationManager {
 
       case "char-range":
       default:
-        // If the element doesn't have its own inline style, it's inheriting.
-        // As requested: "dsadasdasdasdsadas #4ecdc4 this one should only apply at dsadas..."
-        // We only highlight the text nodes for inherited elements.
-        if (!element.hasInlineStyle) {
-          if (element.textNodes.length === 0) {
-            return [];
+        const charRanges: vscode.Range[] = [];
+        for (const node of element.textNodes) {
+          const trimmed = this.trimWhitespaceRange(document, node.range, node.text);
+          if (!trimmed.isEmpty) {
+            charRanges.push(trimmed);
           }
-          const charRanges: vscode.Range[] = [];
-          for (const node of element.textNodes) {
-            const trimmed = this.trimWhitespaceRange(document, node.range, node.text);
-            if (!trimmed.isEmpty) {
-              charRanges.push(trimmed);
-            }
-          }
-          return charRanges;
         }
-
-        // If it HAS an inline style, we highlight the FULL range (tags included)
-        // and subtract all children to allow them to "overwrite" the parent color.
-        let currentRanges: vscode.Range[] = [getElementFullRange(element)];
-
-        const sortedChildren = [...element.children].sort(
-          (a, b) => document.offsetAt(a.startPosition) - document.offsetAt(b.startPosition)
-        );
-
-        for (const child of sortedChildren) {
-          const childRange = getElementFullRange(child);
-          const newRanges: vscode.Range[] = [];
-
-          for (const range of currentRanges) {
-            if (range.contains(childRange)) {
-              // Split the range around the child
-              const before = new vscode.Range(range.start, childRange.start);
-              const after = new vscode.Range(childRange.end, range.end);
-
-              if (!before.isEmpty) {
-                newRanges.push(before);
-              }
-              if (!after.isEmpty) {
-                newRanges.push(after);
-              }
-            } else {
-              newRanges.push(range);
-            }
-          }
-          currentRanges = newRanges;
-        }
-
-        return currentRanges;
+        return charRanges;
     }
   }
 
@@ -186,7 +145,7 @@ export class DecorationManager {
     const endOffset = document.offsetAt(range.end) - trailingWhitespaceCount;
 
     if (startOffset >= endOffset) {
-      return range;
+      return new vscode.Range(range.start, range.start);
     }
 
     return new vscode.Range(document.positionAt(startOffset), document.positionAt(endOffset));

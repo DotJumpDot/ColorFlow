@@ -100,7 +100,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
 
         element.colors = {
           color: colors.color || element.parent?.colors.color,
-          backgroundColor: colors.backgroundColor, // Do not inherit background color
+          backgroundColor: colors.backgroundColor || element.parent?.colors.backgroundColor,
         };
       }
     },
