@@ -4,14 +4,14 @@
 
 **Visualize inline CSS colors in HTML documents with intelligent, configurable background highlighting**
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/StringExtractor.color-flow?style=flat-square&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/StringExtractor.color-flow?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/StringExtractor.color-flow?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/DotJumpDot.color-flow?style=flat-square&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/DotJumpDot.color-flow?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/DotJumpDot.color-flow?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow)
 [![License](https://img.shields.io/github/license/DotJumpDot/Color-Flow?style=flat-square)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS%20Code-1.74.0%2B-blue?style=flat-square&logo=visual-studio-code)](https://code.visualstudio.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 
-[VS Marketplace](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow) • [Changelog](CHANGELOG.md) • [API Docs](AGENTS.md) • [Report Issue](https://github.com/DotJumpDot/Color-Flow/issues)
+[VS Marketplace](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) • [Changelog](CHANGELOG.md) • [API Docs](AGENTS.md) • [Report Issue](https://github.com/DotJumpDot/Color-Flow/issues)
 
 </div>
 
@@ -42,13 +42,13 @@ Color Flow enhances your HTML development experience by automatically detecting 
 
 ## 📦 Extension Info
 
-| Property           | Value                                                                                        |
-| ------------------ | -------------------------------------------------------------------------------------------- |
-| **Name**           | Color Flow                                                                                   |
-| **Publisher**      | DotJumpDot                                                                                   |
-| **Extension ID**   | `StringExtractor.color-flow`                                                                 |
-| **Version**        | 1.2.4                                                                                        |
-| **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow) |
+| Property           | Value                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| **Name**           | Color Flow                                                                              |
+| **Publisher**      | DotJumpDot                                                                              |
+| **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
+| **Version**        | 1.2.5                                                                                   |
+| **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---
 
@@ -64,7 +64,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 ### Via Command Palette
 
 ```bash
-code --install-extension StringExtractor.color-flow
+code --install-extension DotJumpDot.color-flow
 ```
 
 ### From VSIX File
@@ -458,13 +458,13 @@ Built with amazing open-source libraries:
 
 ## 📚 Resources
 
-| Resource              | Link                                                                                         |
-| --------------------- | -------------------------------------------------------------------------------------------- |
-| **VS Marketplace**    | [Color Flow](https://marketplace.visualstudio.com/items?itemName=StringExtractor.color-flow) |
-| **GitHub Issues**     | [Report Issues](https://github.com/DotJumpDot/Color-Flow/issues)                             |
-| **API Documentation** | [AGENTS.md](AGENTS.md)                                                                       |
-| **Changelog**         | [CHANGELOG.md](CHANGELOG.md)                                                                 |
-| **Releases**          | [GitHub Releases](https://github.com/DotJumpDot/Color-Flow/releases)                         |
+| Resource              | Link                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| **VS Marketplace**    | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
+| **GitHub Issues**     | [Report Issues](https://github.com/DotJumpDot/Color-Flow/issues)                        |
+| **API Documentation** | [AGENTS.md](AGENTS.md)                                                                  |
+| **Changelog**         | [CHANGELOG.md](CHANGELOG.md)                                                            |
+| **Releases**          | [GitHub Releases](https://github.com/DotJumpDot/Color-Flow/releases)                    |
 
 ---
 

@@ -4,6 +4,12 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.5] - 2026-01-28
+
+### Changed
+
+- **Publisher Update**: Changed publisher ID from `StringExtractor` to `DotJumpDot` to align with GitHub repository and marketplace consistency
+
 ## [1.2.4] - 2026-01-28
 
 ### Changed
