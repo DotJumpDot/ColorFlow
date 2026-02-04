@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { convertToRGBA } from "./colorConverter";
 import { HTMLElement, getElementTextRange, getElementFullRange } from "./htmlParser";
 import { ColorFlowSettings, HighlightMode } from "./settingsManager";
+import { ClassColorDefinition } from "./cssParser";
 
 export class DecorationManager {
   private decorationCache: Map<string, vscode.TextEditorDecorationType> = new Map();
@@ -12,7 +13,8 @@ export class DecorationManager {
   applyDecorations(
     editor: vscode.TextEditor,
     elements: HTMLElement[],
-    settings: ColorFlowSettings
+    settings: ColorFlowSettings,
+    classColorMap?: Map<string, ClassColorDefinition>
   ): void {
     if (!settings.enabled) {
       this.clearDecorations(editor);
@@ -22,32 +24,25 @@ export class DecorationManager {
     const decorationsByColor: Map<string, vscode.Range[]> = new Map();
 
     for (const element of elements) {
-      const colorValue = element.colors.color || element.colors.backgroundColor;
+      let colorValue = element.colors.color || element.colors.backgroundColor;
+
+      if (settings.enableClassHighlighting && classColorMap && element.classes.length > 0 && !colorValue) {
+        for (const className of element.classes) {
+          const classDef = classColorMap.get(className);
+          if (classDef) {
+            if (classDef.color && !colorValue) {
+              colorValue = classDef.color;
+            }
+            if (!colorValue && classDef.backgroundColor) {
+              colorValue = classDef.backgroundColor;
+            }
+          }
+        }
+      }
 
       if (!colorValue) {
         continue;
       }
-
-      // For full-line mode, we only highlight the element that actually has the inline style
-      // to avoid redundant highlights of the same lines by children.
-      // For other modes, we want to highlight text nodes of children that inherit the color.
-      if (settings.highlightMode === "full-line" && !element.hasInlineStyle) {
-        continue;
-      }
-
-      // If the element has NO inline style but inherits a color, we should check if
-      // it's just inheriting the SAME color as its parent's text color.
-      // If it is, and we are in word-only mode, we might want to let the parent handle it
-      // OR we handle it here.
-      // However, the issue described is that "inherited text" is NOT highlighting.
-      // My previous fix for char-range handled inheritance by default because I iterate all elements.
-      // But wait, the loop `for (const element of elements)` iterates ALL elements, including children.
-
-      // The issue is likely precedence.
-      // If parent has background-color (purple) and child inherits color (teal).
-      // Parent highlights its background. Child highlights its text.
-      // If child is ON TOP of parent, child highlight should be visible.
-      // But if child is inheriting, `element.colors` might be populated.
 
       const backgroundColor = convertToRGBA(colorValue, settings.opacity);
 

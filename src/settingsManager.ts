@@ -9,6 +9,7 @@ export interface ColorFlowSettings {
   borderRadius: string;
   highlightMode: HighlightMode;
   enabled: boolean;
+  enableClassHighlighting: boolean;
 }
 
 export class SettingsManager {
@@ -32,6 +33,7 @@ export class SettingsManager {
       borderRadius: config.get<string>("borderRadius", "0px"),
       highlightMode: config.get<HighlightMode>("highlightMode", "char-range"),
       enabled: config.get<boolean>("enabled", true),
+      enableClassHighlighting: config.get<boolean>("enableClassHighlighting", false),
     };
   }
 

@@ -31,6 +31,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 
 - 🎯 **Automatic Detection** - Instantly identifies inline CSS colors as you type
 - 🎨 **Multiple Color Formats** - Supports named colors, hex, rgb/rgba, hsl/hsla
+- 🏷️ **Class Highlighting** - Highlights colors defined in CSS classes within `<style>` tags
 - ⚙️ **Flexible Highlighting** - Choose from full-line, word-only, or character-range modes
 - 🎭 **Customizable Appearance** - Adjust opacity, borders, and border radius to match your style
 - ⚡ **Real-time Updates** - See changes instantly as you edit your code
@@ -47,7 +48,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.2.5                                                                                   |
+| **Version**        | 1.3.0                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---
@@ -120,7 +121,8 @@ Color Flow provides extensive configuration options to customize your highlighti
   "colorFlow.enableBorder": false,
   "colorFlow.borderColor": "currentColor",
   "colorFlow.borderRadius": "0px",
-  "colorFlow.highlightMode": "char-range"
+  "colorFlow.highlightMode": "char-range",
+  "colorFlow.enableClassHighlighting": true
 }
 ```
 
@@ -215,6 +217,22 @@ Determines how much of the text to highlight.
 }
 ```
 
+#### `colorFlow.enableClassHighlighting`
+
+Enables highlighting for colors defined in CSS classes within `<style>` tags.
+
+- **Type:** `boolean`
+- **Default:** `true`
+- **Example:**
+
+```json
+{
+  "colorFlow.enableClassHighlighting": false
+}
+```
+
+**Note:** This feature parses CSS rules from style blocks and applies colors to elements that reference those classes via `class` attributes.
+
 ---
 
 ## 🎨 Supported Color Formats
@@ -251,40 +269,41 @@ Color Flow uses a sophisticated parsing pipeline to deliver accurate and perform
 graph LR
     A[Document Change] --> B[Parse HTML]
     B --> C[Extract Inline Styles]
-    C --> D[Identify Color Properties]
-    D --> E[Convert to RGBA]
-    E --> F[Apply Opacity]
-    F --> G[Calculate Ranges]
-    G --> H[Render Decorations]
+    C --> D[Parse Style Tags]
+    D --> E[Identify Color Properties]
+    E --> F[Convert to RGBA]
+    F --> G[Apply Opacity]
+    G --> H[Calculate Ranges]
+    H --> I[Render Decorations]
 ```
 
 ### Technical Details
 
 1. **Document Parsing** - Uses `htmlparser2` for fast, accurate HTML parsing
 2. **Style Extraction** - Identifies elements with inline `style` attributes
-3. **Color Detection** - Extracts `color`, `background-color`, and `backgroundColor` properties
-4. **Color Conversion** - Converts all formats to RGBA with configured opacity using `tinycolor2`
-5. **Range Calculation** - Determines precise text ranges based on selected highlight mode
-6. **Decoration Application** - Applies VS Code text decorations with real-time updates
+3. **CSS Parsing** - Extracts CSS rules from `<style>` tags for class-based highlighting
+4. **Color Detection** - Extracts `color`, `background-color`, and `backgroundColor` properties
+5. **Color Conversion** - Converts all formats to RGBA with configured opacity using `tinycolor2`
+6. **Range Calculation** - Determines precise text ranges based on selected highlight mode
+7. **Decoration Application** - Applies VS Code text decorations with real-time updates
 
 ---
 
 ## ⚠️ Limitations
 
-Color Flow is designed for inline styles and currently supports:
+Color Flow is designed for inline styles and class-based colors and currently supports:
 
 ✅ **Supported:**
 
 - Inline styles (`style="..."` attributes)
+- CSS class definitions (`.class { color: red; }`) within `<style>` tags
 - Direct color values (named, hex, rgb, hsl)
 - Real-time updates during editing
 
 ❌ **Not Supported:**
 
-- CSS class definitions (`.class { color: red; }`)
 - CSS variables (`var(--my-color)`)
 - External CSS files
-- `<style>` block declarations
 - Color inheritance from parent elements
 - Computed styles from JavaScript
 
@@ -337,6 +356,7 @@ color-flow/
 │   ├── colorConverter.ts      # Color parsing and conversion
 │   ├── styleParser.ts          # CSS style string parsing
 │   ├── htmlParser.ts           # HTML document parsing
+│   ├── cssParser.ts            # CSS class color extraction
 │   ├── settingsManager.ts      # Extension configuration
 │   ├── decorationManager.ts    # VS Code decoration handling
 │   └── extension.ts            # Main entry point

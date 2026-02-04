@@ -10,6 +10,7 @@ export interface HTMLElement {
     color?: string;
     backgroundColor?: string;
   };
+  classes: string[];
   startPosition: vscode.Position;
   endPosition: vscode.Position;
   textStartPosition?: vscode.Position;
@@ -47,6 +48,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
         attributes: {},
         styles: {},
         colors: {},
+        classes: [],
         startPosition: position,
         endPosition: position,
         textNodes: [],
@@ -71,6 +73,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
         element.attributes = attribs;
         element.styles = attribs.style ? parseStyle(attribs.style) : {};
         element.hasInlineStyle = !!attribs.style;
+        element.classes = attribs.class ? attribs.class.split(/\s+/).filter((c) => c) : [];
 
         const colors = extractColorProperties(element.styles);
 

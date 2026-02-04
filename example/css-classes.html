@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Classes Example - Color Flow</title>
+    <style>
+      /* SECTION 1: Basic Color Classes */
+      .text-red {
+        color: red;
+      }
+      .text-blue {
+        color: blue;
+      }
+      .text-green {
+        color: green;
+      }
+      .text-orange {
+        color: orange;
+      }
+      .text-purple {
+        color: purple;
+      }
+      .text-teal {
+        color: teal;
+      }
+
+      /* SECTION 2: Background Color Classes */
+      .bg-red {
+        background-color: #ff0000;
+      }
+      .bg-green {
+        background-color: #00ff00;
+      }
+      .bg-blue {
+        background-color: #0000ff;
+      }
+      .bg-yellow {
+        background-color: #ffff00;
+      }
+      .bg-magenta {
+        background-color: #ff00ff;
+      }
+      .bg-cyan {
+        background-color: #00ffff;
+      }
+
+      /* SECTION 3: Hex Color Classes */
+      .text-hex-red {
+        color: #ff0000;
+      }
+      .text-hex-green {
+        color: #28a745;
+      }
+      .text-hex-blue {
+        color: #007bff;
+      }
+      .text-hex-purple {
+        color: #6f42c1;
+      }
+      .text-hex-orange {
+        color: #fd7e14;
+      }
+
+      /* SECTION 4: RGB Color Classes */
+      .text-rgb-red {
+        color: rgb(255, 0, 0);
+      }
+      .text-rgb-green {
+        color: rgb(40, 167, 69);
+      }
+      .text-rgb-blue {
+        color: rgb(0, 123, 255);
+      }
+      .text-rgb-gray {
+        color: rgb(128, 128, 128);
+      }
+
+      /* SECTION 5: RGBA Color Classes */
+      .text-rgba-red {
+        color: rgba(255, 0, 0, 0.5);
+      }
+      .text-rgba-green {
+        color: rgba(0, 255, 0, 0.7);
+      }
+      .text-rgba-blue {
+        color: rgba(0, 0, 255, 0.9);
+      }
+      .text-rgba-gray {
+        color: rgba(128, 128, 128, 0.3);
+      }
+
+      /* SECTION 6: HSL Color Classes */
+      .text-hsl-red {
+        color: hsl(0, 100%, 50%);
+      }
+      .text-hsl-green {
+        color: hsl(120, 100%, 50%);
+      }
+      .text-hsl-blue {
+        color: hsl(240, 100%, 50%);
+      }
+      .text-hsl-yellow {
+        color: hsl(60, 100%, 50%);
+      }
+
+      /* SECTION 7: Combined Classes */
+      .text-white-on-red {
+        color: white;
+        background-color: #ff0000;
+      }
+      .text-white-on-green {
+        color: white;
+        background-color: #00ff00;
+      }
+      .text-white-on-blue {
+        color: white;
+        background-color: #0000ff;
+      }
+      .text-black-on-yellow {
+        color: black;
+        background-color: #ffff00;
+      }
+
+      /* SECTION 8: Multiple Properties */
+      .text-blue-bold {
+        color: blue;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      .text-green-underlined {
+        color: green;
+        text-decoration: underline;
+        font-size: 18px;
+      }
+      .text-red-italic {
+        color: red;
+        font-style: italic;
+        letter-spacing: 1px;
+      }
+
+      /* SECTION 9: Section Container Styles */
+      .section {
+        background-color: #f5f5f5;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 4px;
+      }
+
+      .section h1 {
+        color: #333;
+        margin-top: 0;
+      }
+
+      /* SECTION 10: Nested Classes */
+      .container-red {
+        color: red;
+      }
+      .override-blue {
+        color: blue;
+      }
+
+      /* SECTION 11: Button-like Classes */
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      /* SECTION 12: Card-like Classes */
+      .card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        margin: 10px 0;
+      }
+
+      .card-header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px 4px 0 0;
+        margin: -20px -20px 15px -20px;
+      }
+
+      .card-body {
+        color: #333;
+      }
+
+      /* SECTION 13: Alert Classes */
+      .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+
+      .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-color: #bee5eb;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+      }
+
+      .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeeba;
+      }
+
+      .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+      }
+
+      /* SECTION 14: Badge Classes */
+      .badge {
+        display: inline-block;
+        padding: 3px 7px;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1;
+        color: white;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 10px;
+      }
+
+      .badge-primary {
+        background-color: #007bff;
+      }
+
+      .badge-success {
+        background-color: #28a745;
+      }
+
+      .badge-danger {
+        background-color: #dc3545;
+      }
+
+      .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      /* SECTION 15: Gradient Classes */
+      .gradient-primary {
+        background: linear-gradient(45deg, #007bff, #00d2ff);
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+      }
+
+      .gradient-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+      }
+
+      .gradient-danger {
+        background: linear-gradient(45deg, #dc3545, #ff6b6b);
+        color: white;
+        padding: 15px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NOTE: Color Flow Extension can highlight CSS classes when enableClassHighlighting is enabled -->
+    <!-- The following examples use CSS classes and WILL be highlighted when the setting is enabled -->
+    <!-- See inline style examples below for comparison -->
+
+    <h1>CSS Classes Example - Color Flow Extension</h1>
+    <p>
+      <strong>Important:</strong> The Color Flow extension can now highlight CSS classes when
+      <code>colorFlow.enableClassHighlighting</code> is set to <code>true</code> in settings. By
+      default, this feature is <code>false</code>.
+    </p>
+    <p>
+      <strong>Default:</strong> Only <code>style="..."</code> inline attributes are highlighted.
+    </p>
+    <p>
+      <strong>When enabled:</strong> Both inline styles AND CSS classes defined in &lt;style&gt;
+      tags are highlighted.
+    </p>
+
+    <!-- SECTION 1: Basic Color Classes -->
+    <div class="section">
+      <h1>Basic Color Classes (Highlighted when enabled)</h1>
+      <p class="text-red">This text uses .text-red CSS class (highlighted when enabled)</p>
+      <p class="text-blue">This text uses .text-blue CSS class (highlighted when enabled)</p>
+      <p class="text-green">This text uses .text-green CSS class (highlighted when enabled)</p>
+      <p class="text-orange">This text uses .text-orange CSS class (highlighted when enabled)</p>
+      <p class="text-purple">This text uses .text-purple CSS class (highlighted when enabled)</p>
+      <p class="text-teal">This text uses .text-teal CSS class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 2: Background Color Classes -->
+    <div class="section">
+      <h1>Background Color Classes (Highlighted when enabled)</h1>
+      <p class="bg-red">This has .bg-red CSS class (highlighted when enabled)</p>
+      <p class="bg-green">This has .bg-green CSS class (highlighted when enabled)</p>
+      <p class="bg-blue">This has .bg-blue CSS class (highlighted when enabled)</p>
+      <p class="bg-yellow">This has .bg-yellow CSS class (highlighted when enabled)</p>
+      <p class="bg-magenta">This has .bg-magenta CSS class (highlighted when enabled)</p>
+      <p class="bg-cyan">This has .bg-cyan CSS class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 3: Hex Color Classes -->
+    <div class="section">
+      <h1>Hex Color Classes (Highlighted when enabled)</h1>
+      <p class="text-hex-red">This text uses hex color class (highlighted when enabled)</p>
+      <p class="text-hex-green">This text uses hex color class (highlighted when enabled)</p>
+      <p class="text-hex-blue">This text uses hex color class (highlighted when enabled)</p>
+      <p class="text-hex-purple">This text uses hex color class (highlighted when enabled)</p>
+      <p class="text-hex-orange">This text uses hex color class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 4: RGB Color Classes -->
+    <div class="section">
+      <h1>RGB Color Classes (Highlighted when enabled)</h1>
+      <p class="text-rgb-red">This text uses RGB color class (highlighted when enabled)</p>
+      <p class="text-rgb-green">This text uses RGB color class (highlighted when enabled)</p>
+      <p class="text-rgb-blue">This text uses RGB color class (highlighted when enabled)</p>
+      <p class="text-rgb-gray">This text uses RGB color class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 5: RGBA Color Classes -->
+    <div class="section">
+      <h1>RGBA Color Classes (Highlighted when enabled)</h1>
+      <p class="text-rgba-red">This text uses RGBA color class (highlighted when enabled)</p>
+      <p class="text-rgba-green">This text uses RGBA color class (highlighted when enabled)</p>
+      <p class="text-rgba-blue">This text uses RGBA color class (highlighted when enabled)</p>
+      <p class="text-rgba-gray">This text uses RGBA color class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 6: HSL Color Classes -->
+    <div class="section">
+      <h1>HSL Color Classes (Highlighted when enabled)</h1>
+      <p class="text-hsl-red">This text uses HSL color class (highlighted when enabled)</p>
+      <p class="text-hsl-green">This text uses HSL color class (highlighted when enabled)</p>
+      <p class="text-hsl-blue">This text uses HSL color class (highlighted when enabled)</p>
+      <p class="text-hsl-yellow">This text uses HSL color class (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 7: Combined Classes -->
+    <div class="section">
+      <h1>Combined Classes (Highlighted when enabled)</h1>
+      <p class="text-white-on-red">White text on red background (highlighted when enabled)</p>
+      <p class="text-white-on-green">White text on green background (highlighted when enabled)</p>
+      <p class="text-white-on-blue">White text on blue background (highlighted when enabled)</p>
+      <p class="text-black-on-yellow">Black text on yellow background (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 8: Multiple Properties Classes -->
+    <div class="section">
+      <h1>Multiple Properties Classes (Highlighted when enabled)</h1>
+      <p class="text-blue-bold">Blue bold text with 16px font size (highlighted when enabled)</p>
+      <p class="text-green-underlined">
+        Green underlined text with 18px font size (highlighted when enabled)
+      </p>
+      <p class="text-red-italic">Red italic text with letter spacing (highlighted when enabled)</p>
+    </div>
+
+    <!-- SECTION 9: Button Classes -->
+    <div class="section">
+      <h1>Button Classes (Highlighted when enabled)</h1>
+      <button class="btn-primary">Primary Button</button>
+      <button class="btn-success">Success Button</button>
+      <button class="btn-danger">Danger Button</button>
+      <button class="btn-warning">Warning Button</button>
+    </div>
+
+    <!-- SECTION 10: Card Classes -->
+    <div class="section">
+      <h1>Card Classes (Highlighted when enabled)</h1>
+      <div class="card">
+        <div class="card-header">Card Header</div>
+        <div class="card-body">Card body content with text (highlighted when enabled)</div>
+      </div>
+      <div class="card">
+        <div class="card-header">Another Card</div>
+        <div class="card-body">Another card body content (highlighted when enabled)</div>
+      </div>
+    </div>
+
+    <!-- SECTION 11: Alert Classes -->
+    <div class="section">
+      <h1>Alert Classes (Highlighted when enabled)</h1>
+      <div class="alert alert-info">This is an info alert (highlighted when enabled)</div>
+      <div class="alert alert-success">This is a success alert (highlighted when enabled)</div>
+      <div class="alert alert-warning">This is a warning alert (highlighted when enabled)</div>
+      <div class="alert alert-danger">This is a danger alert (highlighted when enabled)</div>
+    </div>
+
+    <!-- SECTION 12: Badge Classes -->
+    <div class="section">
+      <h1>Badge Classes (Highlighted when enabled)</h1>
+      <span class="badge badge-primary">Primary Badge</span>
+      <span class="badge badge-success">Success Badge</span>
+      <span class="badge badge-danger">Danger Badge</span>
+      <span class="badge badge-warning">Warning Badge</span>
+    </div>
+
+    <!-- SECTION 13: Gradient Classes -->
+    <div class="section">
+      <h1>Gradient Classes (Highlighted when enabled)</h1>
+      <div class="gradient-primary">Primary Gradient Text (highlighted when enabled)</div>
+      <div class="gradient-success">Success Gradient Text (highlighted when enabled)</div>
+      <div class="gradient-danger">Danger Gradient Text (highlighted when enabled)</div>
+    </div>
+
+    <!-- COMPARISON: Inline Styles (WILL BE HIGHLIGHTED) -->
+    <div class="section" style="border: 2px solid #007bff">
+      <h1>Inline Styles (WILL BE HIGHLIGHTED by Color Flow)</h1>
+      <p style="color: red">This text uses inline style (WILL be highlighted)</p>
+      <p style="color: blue">This text uses inline style (WILL be highlighted)</p>
+      <p style="color: green">This text uses inline style (WILL be highlighted)</p>
+      <p style="background-color: #ffcccc">
+        This has inline background color (WILL be highlighted)
+      </p>
+      <p style="color: white; background-color: #ff0000">
+        Inline style with both (WILL be highlighted)
+      </p>
+    </div>
+
+    <!-- SECTION 13: Nested Classes (NO HIGHLIGHTING) -->
+    <div class="section">
+      <h1>Nested Classes (Not Highlighted)</h1>
+      <div class="container-red">
+        <p>This div uses .container-red class (NOT highlighted)</p>
+        <p class="override-blue">
+          This paragraph overrides with .override-blue class (NOT highlighted)
+        </p>
+        <p>Back to red from parent container (NOT highlighted)</p>
+      </div>
+    </div>
+
+    <!-- EXPLANATION -->
+    <div class="section" style="background-color: #fff3cd">
+      <h1>Understanding Color Flow Extension</h1>
+      <p><strong>Color Flow Extension Scope:</strong></p>
+      <ul style="color: #856404">
+        <li>
+          ✅ <strong>Always:</strong> Highlights inline styles: <code>style="color: red;"</code>
+        </li>
+        <li>❌ <strong>Never:</strong> Highlights external CSS files</li>
+        <li>
+          🔲 <strong>Optional:</strong> When <code>colorFlow.enableClassHighlighting = true</code>,
+          highlights CSS classes in &lt;style&gt; tags: <code>class="text-red"</code>
+        </li>
+      </ul>
+      <p>
+        <strong>Default Behavior:</strong> The extension parses HTML documents and only looks at
+        inline <code>style</code> attributes.
+      </p>
+      <p>
+        <strong>With Class Highlighting Enabled:</strong> When
+        <code>colorFlow.enableClassHighlighting</code> is set to <code>true</code>, the extension
+        also parses CSS from <code>&lt;style&gt;</code> tags and applies highlights to elements
+        using those classes.
+      </p>
+      <p>
+        <strong>Use Case:</strong> Best for quick prototyping, debugging inline styles, and
+        visualizing color in HTML documents. Enable class highlighting to also see colors from
+        embedded CSS.
+      </p>
+    </div>
+  </body>
+</html>

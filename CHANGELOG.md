@@ -4,6 +4,20 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-02-04
+
+### Added
+
+- **CSS Class Highlighting**: New feature to highlight colors defined in CSS classes within `<style>` tags
+- **Class Color Map**: Parses CSS rules from style blocks to extract class-based color definitions
+- **Class Attribute Tracking**: HTML parser now tracks class attributes on elements for class-based highlighting
+- **CSS Parser Module**: New `cssParser.ts` module for parsing and extracting class color definitions from CSS
+
+### Changed
+
+- **Class Highlighting Default**: `enableClassHighlighting` setting now defaults to `true` for better out-of-the-box experience
+- **Performance Optimization**: Class highlighting uses efficient Map-based lookups for O(1) color retrieval
+
 ## [1.2.5] - 2026-01-28
 
 ### Changed
@@ -137,8 +151,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Planned Features
 
 - Support for CSS variables (`var(--my-color)`)
-- Support for class-based styling
-- Support for `<style>` block declarations
-- Color inheritance from parent elements
 - External CSS file parsing
 - More color format support (LCH, OKLCH, etc.)

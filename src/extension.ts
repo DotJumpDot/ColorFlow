@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { parseHTMLDocument } from "./htmlParser";
 import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
+import { parseCSSStyles } from "./cssParser";
 
 const SUPPORTED_LANGUAGES = ["html", "php", "vue", "svelte", "typescriptreact", "javascriptreact"];
 
@@ -51,8 +52,29 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const { elements } = parseHTMLDocument(editor.document);
-    decorationManager.applyDecorations(editor, elements, settings);
+    
+    let classColorMap: Map<string, import("./cssParser").ClassColorDefinition> | undefined;
+    
+    if (settings.enableClassHighlighting) {
+      const cssContent = extractCSSFromDocument(editor.document);
+      classColorMap = parseCSSStyles(cssContent);
+    }
+    
+    decorationManager.applyDecorations(editor, elements, settings, classColorMap);
   };
+
+  function extractCSSFromDocument(document: vscode.TextDocument): string {
+    const text = document.getText();
+    const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+    let match;
+    let cssContent = "";
+
+    while ((match = styleRegex.exec(text)) !== null) {
+      cssContent += match[1] + "\n";
+    }
+
+    return cssContent;
+  }
 
   const debouncedUpdate = (editor: vscode.TextEditor) => {
     if (updateTimeout) {

@@ -6,6 +6,7 @@ This document provides detailed documentation for main functions and modules in 
 
 - [ColorConverter Module](#colorconverter-module)
 - [StyleParser Module](#styleparser-module)
+- [CSSParser Module](#cssparser-module)
 - [HTMLParser Module](#htmlparser-module)
 - [SettingsManager Module](#settingsmanager-module)
 - [DecorationManager Module](#decorationmanager-module)
@@ -168,6 +169,96 @@ Converts a style string into an array of StyleProperty objects.
 getStyleProperties("color: red; background: blue;");
 // Returns: [{ property: "color", value: "red" }, { property: "background", value: "blue" }]
 ```
+
+---
+
+## CSSParser Module
+
+### `parseCSSStyles(cssText: string): Map<string, ClassColorDefinition>`
+
+Parses CSS text and extracts color definitions for CSS classes.
+
+**Parameters:**
+
+- `cssText` (string): CSS text content (typically from `<style>` tags)
+
+**Returns:**
+
+- `Map<string, ClassColorDefinition>`: Map of class names to their color definitions
+
+**Behavior:**
+
+- Extracts CSS rules using regex pattern matching
+- Parses selectors to find class names (`.className`)
+- Extracts `color` and `background-color` declarations
+- Merges multiple rules for the same class (first color found is used)
+
+**Example:**
+
+```typescript
+const css = ".text-red { color: red; } .bg-blue { background-color: blue; }";
+const classColors = parseCSSStyles(css);
+console.log(classColors.get("text-red")); // { className: "text-red", color: "red" }
+```
+
+---
+
+### `extractClassNames(selector: string): string[]`
+
+Extracts class names from a CSS selector.
+
+**Parameters:**
+
+- `selector` (string): CSS selector string (e.g., ".btn.active, .link:hover")
+
+**Returns:**
+
+- `string[]`: Array of class names without the dot prefix
+
+**Example:**
+
+```typescript
+extractClassNames(".btn.active, .link:hover");
+// Returns: ["btn", "active", "link", "hover"]
+```
+
+---
+
+### `extractCSSRules(cssText: string): CSSRule[]`
+
+Extracts CSS rules from CSS text.
+
+**Parameters:**
+
+- `cssText` (string): CSS text content
+
+**Returns:**
+
+- `CSSRule[]`: Array of CSS rules with selectors and declarations
+
+**Implementation:**
+
+- Removes CSS comments before parsing
+- Uses regex `/{[^}]}/` to match rule blocks
+- Splits declarations by semicolon
+
+---
+
+### `removeComments(cssText: string): string`
+
+Removes CSS comments from text.
+
+**Parameters:**
+
+- `cssText` (string): CSS text content
+
+**Returns:**
+
+- `string`: CSS text without comments
+
+**Implementation:**
+
+- Uses regex `/\/\*[\s\S]*?\*\//g` to match multi-line comments
 
 ---
 
@@ -366,7 +457,7 @@ const decorationManager = new DecorationManager();
 
 ---
 
-### `applyDecorations(editor: vscode.TextEditor, elements: HTMLElement[], settings: ColorFlowSettings): void`
+### `applyDecorations(editor: vscode.TextEditor, elements: HTMLElement[], settings: ColorFlowSettings, classColorMap?: Map<string, ClassColorDefinition>): void`
 
 Applies color decorations to elements in the editor.
 
@@ -375,18 +466,22 @@ Applies color decorations to elements in the editor.
 - `editor` (vscode.TextEditor): VS Code text editor to decorate
 - `elements` (HTMLElement[]): Array of parsed HTML elements
 - `settings` (ColorFlowSettings): Current extension settings
+- `classColorMap` (Map<string, ClassColorDefinition>, optional): Map of CSS class color definitions
 
 **Behavior:**
 
 - Checks `settings.enabled` - if false, clears all decorations and returns
 - Processes elements with inline styles containing color or background-color properties
+- When `settings.enableClassHighlighting` is true and `classColorMap` is provided:
+  - Falls back to class-based colors for elements without inline colors
+  - Searches element's `classes` array for matching color definitions
 - Groups decorations by color for efficient rendering
 - Caches decoration types to avoid recreation
 
 **Example:**
 
 ```typescript
-decorationManager.applyDecorations(editor, elements, settings);
+decorationManager.applyDecorations(editor, elements, settings, classColorMap);
 ```
 
 ---
@@ -620,6 +715,7 @@ interface ColorFlowSettings {
   borderColor: string;
   borderRadius: string;
   highlightMode: "full-line" | "word-only" | "char-range";
+  enableClassHighlighting: boolean;
 }
 ```
 
@@ -627,6 +723,34 @@ interface ColorFlowSettings {
 
 ```typescript
 type HighlightMode = "full-line" | "word-only" | "char-range";
+```
+
+### `ClassColorDefinition`
+
+```typescript
+interface ClassColorDefinition {
+  className: string;
+  color?: string;
+  backgroundColor?: string;
+}
+```
+
+### `CSSRule`
+
+```typescript
+interface CSSRule {
+  selector: string;
+  declarations: CSSDeclaration[];
+}
+```
+
+### `CSSDeclaration`
+
+```typescript
+interface CSSDeclaration {
+  property: string;
+  value: string;
+}
 ```
 
 ---
@@ -637,15 +761,18 @@ Color Flow is built with a modular architecture:
 
 1. **ColorConverter**: Handles color parsing and conversion to RGBA format
 2. **StyleParser**: Parses CSS style strings and extracts color properties
-3. **HTMLParser**: Parses HTML documents using htmlparser2 and tracks accurate positions
-4. **SettingsManager**: Manages extension configuration and change events
-5. **DecorationManager**: Applies VS Code text decorations based on parsed elements and settings
-6. **Extension Entry Point**: Coordinates all components and manages VS Code lifecycle
+3. **CSSParser**: Parses CSS rules from `<style>` tags and extracts class-based color definitions
+4. **HTMLParser**: Parses HTML documents using htmlparser2 and tracks accurate positions
+5. **SettingsManager**: Manages extension configuration and change events
+6. **DecorationManager**: Applies VS Code text decorations based on parsed elements and settings
+7. **Extension Entry Point**: Coordinates all components and manages VS Code lifecycle
 
 ### Key Design Decisions
 
 - **Character-based Positioning**: Uses `document.positionAt()` instead of manual line/column counting for accuracy
 - **Decoration Caching**: Reuses `vscode.TextEditorDecorationType` objects for performance
 - **Debounced Updates**: Uses 100ms timeout to avoid excessive decorations during typing
+- **Class Color Map**: Uses `Map<string, ClassColorDefinition>` for O(1) class color lookups
 - **Supported Languages Filter**: Checks `languageId` before processing to avoid unsupported file types
 - **Status Bar Integration**: Provides visual feedback and quick access to settings
+- **Conditional Class Highlighting**: Only parses CSS when `enableClassHighlighting` setting is true

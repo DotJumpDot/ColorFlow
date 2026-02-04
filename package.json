@@ -2,7 +2,7 @@
   "name": "color-flow",
   "displayName": "Color Flow",
   "description": "Visualize inline CSS colors in HTML documents with configurable background highlighting",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "publisher": "DotJumpDot",
   "icon": "assets/icon.png",
   "engines": {
@@ -86,11 +86,16 @@
           ],
           "default": "char-range",
           "enumDescriptions": [
-            "Highlight the entire line containing the element",
+            "Highlight entire line containing the element",
             "Highlight from first non-space to last non-space character",
-            "Highlight the exact element text range"
+            "Highlight exact element text range"
           ],
           "description": "Determines how much of the text to highlight"
+        },
+        "colorFlow.enableClassHighlighting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable highlighting for CSS classes defined in style tags"
         }
       }
     }
