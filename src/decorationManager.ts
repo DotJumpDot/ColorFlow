@@ -24,27 +24,13 @@ export class DecorationManager {
     const decorationsByColor: Map<string, vscode.Range[]> = new Map();
 
     for (const element of elements) {
-      let colorValue = element.colors.color || element.colors.backgroundColor;
+      const effectiveColor = this.getEffectiveColor(element, classColorMap, settings.enableClassHighlighting);
 
-      if (settings.enableClassHighlighting && classColorMap && element.classes.length > 0 && !colorValue) {
-        for (const className of element.classes) {
-          const classDef = classColorMap.get(className);
-          if (classDef) {
-            if (classDef.color && !colorValue) {
-              colorValue = classDef.color;
-            }
-            if (!colorValue && classDef.backgroundColor) {
-              colorValue = classDef.backgroundColor;
-            }
-          }
-        }
-      }
-
-      if (!colorValue) {
+      if (!effectiveColor) {
         continue;
       }
 
-      const backgroundColor = convertToRGBA(colorValue, settings.opacity);
+      const backgroundColor = convertToRGBA(effectiveColor, settings.opacity);
 
       if (!backgroundColor) {
         continue;
@@ -69,6 +55,44 @@ export class DecorationManager {
       const decoration = this.getOrCreateDecoration(backgroundColor, settings);
       editor.setDecorations(decoration, ranges);
     }
+  }
+
+  private getEffectiveColor(
+    element: HTMLElement,
+    classColorMap?: Map<string, ClassColorDefinition>,
+    enableClassHighlighting?: boolean
+  ): string | null {
+    let colorValue: string | null = null;
+
+    if (element.colors.color) {
+      colorValue = element.colors.color;
+    } else if (element.colors.backgroundColor) {
+      colorValue = element.colors.backgroundColor;
+    }
+
+    if (enableClassHighlighting && classColorMap && element.classes.length > 0 && !colorValue) {
+      for (const className of element.classes) {
+        const classDef = classColorMap.get(className);
+        if (classDef) {
+          if (classDef.color && !colorValue) {
+            colorValue = classDef.color;
+          }
+          if (!colorValue && classDef.backgroundColor) {
+            colorValue = classDef.backgroundColor;
+          }
+        }
+      }
+    }
+
+    if (colorValue) {
+      return colorValue;
+    }
+
+    if (element.parent) {
+      return this.getEffectiveColor(element.parent, classColorMap, enableClassHighlighting);
+    }
+
+    return null;
   }
 
   private getRangesForElement(

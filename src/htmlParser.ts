@@ -77,34 +77,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
 
         const colors = extractColorProperties(element.styles);
 
-        // Inherit colors from parent if not defined on the element
-        // Priority:
-        // 1. Element's own 'color'
-        // 2. Element's own 'background-color' (treated as color for highlighting)
-        // 3. Parent's 'color' (inherited text color)
-        // 4. Parent's 'background-color' ?? NO. Background color is NOT inherited as text color.
-
-        // The issue:
-        // <section style="background-color: purple; color: teal">
-        //   <h2>Text</h2>
-        // </section>
-        // h2 has NO styles.
-        // It inherits 'color': teal.
-        // It does NOT inherit 'background-color': purple.
-        // So h2.colors.color should be 'teal'. h2.colors.backgroundColor should be undefined.
-
-        // In my previous code:
-        // element.colors = {
-        //   color: colors.color || element.parent?.colors.color,
-        //   backgroundColor: colors.backgroundColor || element.parent?.colors.backgroundColor,
-        // };
-        // This line: `backgroundColor: ... || element.parent?.colors.backgroundColor` is WRONG for CSS inheritance!
-        // background-color is NOT inherited by default.
-
-        element.colors = {
-          color: colors.color || element.parent?.colors.color,
-          backgroundColor: colors.backgroundColor || element.parent?.colors.backgroundColor,
-        };
+        element.colors = colors;
       }
     },
 

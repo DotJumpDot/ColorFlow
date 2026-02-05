@@ -298,13 +298,13 @@ Color Flow is designed for inline styles and class-based colors and currently su
 - Inline styles (`style="..."` attributes)
 - CSS class definitions (`.class { color: red; }`) within `<style>` tags
 - Direct color values (named, hex, rgb, hsl)
+- Color inheritance from parent elements (nested elements inherit colors from ancestors)
 - Real-time updates during editing
 
 ❌ **Not Supported:**
 
 - CSS variables (`var(--my-color)`)
 - External CSS files
-- Color inheritance from parent elements
 - Computed styles from JavaScript
 
 ---

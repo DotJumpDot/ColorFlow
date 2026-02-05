@@ -4,6 +4,20 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.0] - 2026-02-05
+
+### Added
+
+- **Proper Color Inheritance**: Nested elements now correctly inherit colors from parent elements using CSS inheritance rules
+- **Last Color Priority**: Elements use the most specific (closest ancestor) color definition, following proper CSS specificity
+- **Recursive Color Resolution**: New `getEffectiveColor` method in DecorationManager for intelligent color lookup through the element tree
+
+### Fixed
+
+- **Nested Element Highlighting**: Fixed issue where nested elements (like `<p>` inside `<div>` with CSS classes) were not being highlighted
+- **Sub Div Content Color**: Sub divs and nested elements now properly inherit and display colors from parent elements
+- **Parent-Child Color Chain**: Color inheritance now correctly propagates through multiple levels of nesting
+
 ## [1.3.0] - 2026-02-04
 
 ### Added
