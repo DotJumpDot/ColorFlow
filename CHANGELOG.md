@@ -4,6 +4,13 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.1] - 2026-02-05
+
+### Added
+
+- **Second Demo GIF**: Added demo2.gif showcasing CSS class highlighting and nested element color inheritance
+- **Enhanced Documentation**: README now includes two demo sections - one for inline styles and one for CSS classes
+
 ## [1.4.0] - 2026-02-05
 
 ### Added

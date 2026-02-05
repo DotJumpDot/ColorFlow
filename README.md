@@ -17,11 +17,17 @@
 
 ---
 
-## 📺 Demo
+## 📺 Demo - Inline Styles
 
 ![Color Flow Demo](./assets/demo.gif)
 
 > Watch how Color Flow automatically highlights inline CSS colors in real-time as you type
+
+## 📺 Demo - CSS Classes
+
+![Color Flow Class Demo](./assets/demo2.gif)
+
+> See how Color Flow highlights colors from CSS classes and handles nested element color inheritance
 
 ---
 
@@ -48,7 +54,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.3.0                                                                                   |
+| **Version**        | 1.4.1                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---
