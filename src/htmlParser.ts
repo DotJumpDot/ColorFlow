@@ -73,7 +73,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
         element.attributes = attribs;
         element.styles = attribs.style ? parseStyle(attribs.style) : {};
         element.hasInlineStyle = !!attribs.style;
-        element.classes = attribs.class ? attribs.class.split(/\s+/).filter((c) => c) : [];
+        element.classes = attribs.className ? attribs.className.split(/\s+/).filter((c) => c) : (attribs.class ? attribs.class.split(/\s+/).filter((c) => c) : []);
 
         const colors = extractColorProperties(element.styles);
 

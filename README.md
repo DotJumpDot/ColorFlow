@@ -2,7 +2,7 @@
 
 # 🌊 Color Flow
 
-**Visualize inline CSS colors in HTML documents with intelligent, configurable background highlighting**
+**Visualize CSS colors in HTML documents with intelligent , configurable highlighting**
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/DotJumpDot.color-flow?style=flat-square&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/DotJumpDot.color-flow?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow)
@@ -54,7 +54,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.4.1                                                                                   |
+| **Version**        | 1.4.3                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---

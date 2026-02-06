@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { parseHTMLDocument } from "./htmlParser";
+import { parseReactDocument } from "./reactParser";
 import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
 import { parseCSSStyles } from "./cssParser";
@@ -51,7 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const { elements } = parseHTMLDocument(editor.document);
+    const isReactFile = languageId === "typescriptreact" || languageId === "javascriptreact";
+    const { elements } = isReactFile ? parseReactDocument(editor.document) : parseHTMLDocument(editor.document);
     
     let classColorMap: Map<string, import("./cssParser").ClassColorDefinition> | undefined;
     

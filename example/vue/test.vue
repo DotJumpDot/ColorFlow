@@ -1,11 +1,5 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Color Flow Test Cases</title>
-  </head>
-  <body>
+<template>
+  <div>
     <!-- SECTION 1: Basic Color Names -->
     <section style="background-color: #f5f5f5; padding: 20px; margin: 10px">
       <h1>Basic Color Names</h1>
@@ -297,5 +291,11 @@
       <p style="background-color: #ccffcc">Text with green background</p>
       <p style="background-color: #ccccff">Text with blue background</p>
     </section>
-  </body>
-</html>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ColorFlowTest'
+}
+</script>

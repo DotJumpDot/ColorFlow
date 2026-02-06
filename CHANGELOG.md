@@ -4,6 +4,18 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.3] - 2026-02-06
+
+### Added
+
+- **TSX and JSX Support**: Full support for `.tsx` and `.jsx` files, including intelligent parsing for React-style inline styles (`style={{ color: 'red' }}`).
+
+## [1.4.2] - 2026-02-06
+
+### Added
+
+- **Svelte and Vue Support**: Enhanced support for Svelte and Vue components, ensuring color highlighting and CSS class detection work seamlessly across these frameworks.
+
 ## [1.4.1] - 2026-02-05
 
 ### Added
