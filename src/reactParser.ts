@@ -4,36 +4,88 @@ import { HTMLElement, ParseResult } from "./htmlParser";
 import { extractColorProperties } from "./styleParser";
 
 const STYLE_OBJECT_REGEX = /style=\{\{([\s\S]*?)\}\}/g;
-const STYLE_PROPERTY_REGEX = /(\w+)\s*:\s*['"]([^'"]+)['"]/g;
 
 export function parseReactStyleObject(styleString: string): { [key: string]: string } {
   const styles: { [key: string]: string } = {};
+
+  // Find all property: value patterns
+  // We allow the value to be complex (like conditionals), and we try to extract
+  // the first color-like string we find in it.
+  const propertyRegex = /(\w+)\s*:\s*([^,}]+)/g;
   let match;
 
-  STYLE_PROPERTY_REGEX.lastIndex = 0;
-  while ((match = STYLE_PROPERTY_REGEX.exec(styleString)) !== null) {
+  while ((match = propertyRegex.exec(styleString)) !== null) {
     const property = match[1];
-    const value = match[2];
-    if (property && value) {
-      styles[property] = value;
+    const complexValue = match[2];
+
+    // Regex for hex, rgb, rgba, hsl, hsla, or color names in quotes
+    const colorMatch = complexValue.match(
+      /['"`](#[0-9a-fA-F]{3,8}|rgba?\(.*?\)|hsla?\(.*?\)|[a-zA-Z]+)['"`]/
+    );
+    if (colorMatch) {
+      styles[property] = colorMatch[1];
     }
   }
   return styles;
 }
 
+/**
+ * Sanitizes JSX/TSX text by replacing attribute values that use { ... } with underscores.
+ * This prevents htmlparser2 from breaking on characters like '>' inside JSX expressions
+ * (common in arrow functions like onClick={() => ...}) while they are inside a tag.
+ * Length is preserved to keep document offsets accurate.
+ */
+function sanitizeJSXAttributes(text: string): string {
+  const regex = /([a-zA-Z0-9-]+\s*=\s*\{)/g;
+  let match;
+  let lastIndex = 0;
+  let sanitizedText = "";
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text up to the start of the attribute value
+    sanitizedText += text.substring(lastIndex, match.index + match[1].length);
+
+    let i = match.index + match[1].length;
+    let depth = 1;
+    let inString: string | null = null;
+    let start = i;
+
+    while (i < text.length && depth > 0) {
+      const char = text[i];
+      if (inString) {
+        if (char === inString && (i === 0 || text[i - 1] !== "\\")) {
+          inString = null;
+        }
+      } else {
+        if (char === '"' || char === "'" || char === "`") {
+          inString = char;
+        } else if (char === "{") {
+          depth++;
+        } else if (char === "}") {
+          depth--;
+        }
+      }
+      i++;
+    }
+
+    // Replace the content of the attribute value with underscores, keeping the closing brace
+    const contentLen = i - 1 - start;
+    sanitizedText += "_".repeat(Math.max(0, contentLen)) + "}";
+    lastIndex = i;
+  }
+
+  // Add the remaining text
+  sanitizedText += text.substring(lastIndex);
+  return sanitizedText;
+}
+
 export function parseReactDocument(document: vscode.TextDocument): ParseResult {
   const originalText = document.getText();
-  
-  // Sanitize text: replace style={{...}} with style="...spaces..."
-  // This preserves length and allows htmlparser2 to parse the structure
-  // while keeping offsets correct for text nodes and other elements.
-  const sanitizedText = originalText.replace(STYLE_OBJECT_REGEX, (match) => {
-    // style=" is 7 chars. " is 1 char. Total 8 chars wrapper.
-    // We want total length to be match.length.
-    // So content should be match.length - 8 spaces.
-    const contentLen = Math.max(0, match.length - 8);
-    return 'style="' + ' '.repeat(contentLen) + '"';
-  });
+
+  // Sanitize text: replace JSX attribute values { ... } with underscores to avoid breaking htmlparser2.
+  // This prevents the parser from getting confused by '>' in arrow functions inside attributes.
+  // We keep the length the same to preserve offsets.
+  const sanitizedText = sanitizeJSXAttributes(originalText);
 
   const elements: HTMLElement[] = [];
   const elementStack: HTMLElement[] = [];
@@ -75,50 +127,49 @@ export function parseReactDocument(document: vscode.TextDocument): ParseResult {
     onopentag(name, attribs) {
       if (elementStack.length > 0) {
         const element = elementStack[elementStack.length - 1];
-        
+
         // Recover original attributes from original text
         // We use the element's start position (calculated in onopentagname)
         const tagStartIndex = document.offsetAt(element.startPosition);
         // parser.endIndex points to the end of the tag '>'
         const tagEndIndex = parser.endIndex;
-        
+
         // Extract the full tag string from the ORIGINAL text
         const originalTagContent = originalText.substring(tagStartIndex, tagEndIndex + 1);
-        
+
         // Parse className (React) or class (HTML fallback)
         const classMatch = originalTagContent.match(/className=\{?['"]([^'"]+)['"]\}?/);
         if (classMatch) {
-            element.classes = classMatch[1].split(/\s+/).filter(c => c);
+          element.classes = classMatch[1].split(/\s+/).filter((c) => c);
         } else if (attribs.class) {
-            element.classes = attribs.class.split(/\s+/).filter(c => c);
+          element.classes = attribs.class.split(/\s+/).filter((c) => c);
         }
 
         // Parse style
         // We look for style={{...}} in the original tag content
         const styleRegex = /style=\{\{([\s\S]*?)\}\}/;
         const styleMatch = originalTagContent.match(styleRegex);
-        
+
         if (styleMatch) {
-            element.hasInlineStyle = true;
-            const styleBody = styleMatch[1]; // Content inside {{ }}
-            element.styles = parseReactStyleObject(styleBody);
-            
-            const colorValue = element.styles.color;
-            const bgColorValue = element.styles.backgroundColor || element.styles.background;
-            
-            if (colorValue) element.colors.color = colorValue;
-            if (bgColorValue) element.colors.backgroundColor = bgColorValue;
-            
+          element.hasInlineStyle = true;
+          const styleBody = styleMatch[1]; // Content inside {{ }}
+          element.styles = parseReactStyleObject(styleBody);
+
+          const colorValue = element.styles.color;
+          const bgColorValue = element.styles.backgroundColor || element.styles.background;
+
+          if (colorValue) element.colors.color = colorValue;
+          if (bgColorValue) element.colors.backgroundColor = bgColorValue;
         } else if (attribs.style && attribs.style.trim().length > 0) {
-             // Handle normal style="..." if present and NOT our sanitized spaces
-             // Our sanitized style contains only spaces.
-             const styles = parseSimpleStyle(attribs.style);
-             element.styles = { ...element.styles, ...styles };
-             
-             // Extract colors from parsed styles
-             const colors = extractColorProperties(styles);
-             if (colors.color) element.colors.color = colors.color;
-             if (colors.backgroundColor) element.colors.backgroundColor = colors.backgroundColor;
+          // Handle normal style="..." if present and NOT our sanitized spaces
+          // Our sanitized style contains only spaces.
+          const styles = parseSimpleStyle(attribs.style);
+          element.styles = { ...element.styles, ...styles };
+
+          // Extract colors from parsed styles
+          const colors = extractColorProperties(styles);
+          if (colors.color) element.colors.color = colors.color;
+          if (colors.backgroundColor) element.colors.backgroundColor = colors.backgroundColor;
         }
       }
     },
@@ -138,7 +189,7 @@ export function parseReactDocument(document: vscode.TextDocument): ParseResult {
 
         // Add to text nodes
         currentElement.textNodes.push({ text: data, range });
-        
+
         // Update legacy fields
         if (currentElement.textStartPosition === undefined) {
           currentElement.textContent = data;

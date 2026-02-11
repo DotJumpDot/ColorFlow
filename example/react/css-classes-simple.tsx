@@ -3,6 +3,15 @@ import React from 'react';
 const CSSClassesSimple: React.FC = () => {
   return (
     <div>
+      <style>{`
+        .main-red { color: #ff0000; }
+        .main-blue { color: #0000ff; }
+        .main-green { color: #00ff00; }
+        .sub-yellow { color: #ffff00; }
+        .sub-purple { color: #800080; }
+        .bg-orange { background-color: #ffa500; }
+        .bg-cyan { background-color: #00ffff; }
+      `}</style>
       <h1>CSS Classes Simple Example</h1>
       <div className="main-red">
         <h2>Main div with red color</h2>

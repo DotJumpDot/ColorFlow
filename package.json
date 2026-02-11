@@ -2,7 +2,7 @@
   "name": "color-flow",
   "displayName": "Color Flow",
   "description": "Visualize CSS colors in HTML documents with configurable background highlighting",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "publisher": "DotJumpDot",
   "icon": "assets/icon.png",
   "engines": {

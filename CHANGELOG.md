@@ -4,6 +4,15 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.4] - 2026-02-11
+
+### Fixed
+
+- **TSX/JSX Parsing Bug**: Fixed issue where arrow functions and complex JavaScript expressions in JSX attributes (e.g., `onClick={() => ...}`) caused incorrect highlighting of entire code blocks
+- **Conditional Style Parsing**: Improved React style object parsing to correctly handle conditional styles and ternary operators (e.g., `backgroundColor: visible ? "#564E4E" : "#9c8c8c"`)
+- **JSX Attribute Sanitization**: Added robust sanitization of JSX attribute values to prevent htmlparser2 from misinterpreting special characters like `>` inside JavaScript expressions
+- **Accurate Text Ranges**: Fixed element text content detection in React files to ensure highlights only appear on actual text content, not on surrounding JSX syntax
+
 ## [1.4.3] - 2026-02-06
 
 ### Added
