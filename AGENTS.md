@@ -8,6 +8,7 @@ This document provides detailed documentation for main functions and modules in 
 - [StyleParser Module](#styleparser-module)
 - [CSSParser Module](#cssparser-module)
 - [HTMLParser Module](#htmlparser-module)
+- [ReactParser Module](#reactparser-module)
 - [SettingsManager Module](#settingsmanager-module)
 - [DecorationManager Module](#decorationmanager-module)
 - [Extension Entry Point](#extension-entry-point)
@@ -353,6 +354,88 @@ Gets the full range from element start to end position.
 
 ```typescript
 const range = getElementFullRange(element);
+```
+
+---
+## ReactParser Module
+
+### `parseReactDocument(document: vscode.TextDocument): ParseResult`
+
+Parses a React/TSX/JSX document and extracts elements with inline styles and JSX expressions.
+
+**Parameters:**
+
+- `document` (vscode.TextDocument): VS Code text document to parse
+
+**Returns:**
+
+- `ParseResult`: Object containing:
+  - `elements`: Array of all parsed HTMLElement objects
+  - `root`: Root element of the React component tree
+
+**Implementation Details:**
+
+- **JSX Sanitization**: Masks complex JavaScript expressions (`{...}`) to prevent htmlparser2 from breaking on special characters
+- **Expression Handling**: Simple expressions (like `{title}`, `{children}`) are masked with underscores to allow highlighting
+- **Complex Logic Detection**: Identifies and masks complex expressions (arrow functions, conditionals, etc.) to avoid incorrect highlighting
+- **Style Object Parsing**: Extracts colors from React-style inline `style={{ ... }}` objects
+- **Nested Element Support**: Correctly handles nested elements and React fragments
+
+**Example:**
+
+```typescript
+const result = parseReactDocument(editor.document);
+console.log(result.elements); // Array of React elements with color info
+```
+
+**Dependencies:** htmlparser2
+
+---
+
+### `parseReactStyleObject(styleString: string): { [key: string]: string }`
+
+Parses a React style object string and extracts color properties.
+
+**Parameters:**
+
+- `styleString` (string): The style object body (e.g., `"color: 'red', fontSize: '16px'"`)
+
+**Returns:**
+
+- `{ [key: string]: string }`: Object with style properties and extracted color values
+
+**Example:**
+
+```typescript
+const styles = parseReactStyleObject("color: 'red', backgroundColor: 'blue'");
+console.log(styles); // { color: 'red', backgroundColor: 'blue' }
+```
+
+---
+
+### `sanitizeJSX(text: string): string`
+
+Sanitizes JSX/TSX text by masking logic blocks while preserving tags.
+
+**Parameters:**
+
+- `text` (string): Raw JSX/TSX text
+
+**Returns:**
+
+- `string`: Sanitized text with complex logic masked
+
+**Purpose:**
+
+- Prevents htmlparser2 from breaking on characters like `>` inside JavaScript expressions
+- Prevents decoration manager from highlighting complex code blocks
+- Preserves simple JSX expressions for proper highlighting
+
+**Example:**
+
+```typescript
+const sanitized = sanitizeJSX('<div>{title}</div>');
+console.log(sanitized); // '<div>{_____}</div>' (title becomes underscores)
 ```
 
 ---

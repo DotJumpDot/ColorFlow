@@ -4,6 +4,33 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.5] - 2026-02-23
+
+### Fixed
+
+- **JSX Expression Highlighting**: Fixed issue where JSX expressions like `{title}`, `{children}`, and `{config.label}` were not being highlighted. These expressions now correctly display color backgrounds based on parent element styles
+- **Code Syntax Detection**: Improved `isPureCodeSyntax` method to properly distinguish between:
+  - React variable expressions (should be highlighted): `{variable}`, `{props.name}`, `{item.description}`
+  - Pure code syntax (should not be highlighted): function declarations, const/let statements, control flow
+- **Sanitized Expression Handling**: Added support for sanitized underscore representations of JSX expressions (e.g., `{_____}`) used internally by the parser
+
+### Added
+
+- **React Parser Tests**: Comprehensive unit tests for JSX/TSX parsing covering:
+  - Inline styles with color and backgroundColor
+  - Class name parsing
+  - Nested elements
+  - JSX expressions and text content
+  - Conditional styles
+  - Self-closing tags
+  - React fragments
+  - Various HTML elements (div, button, span, h1, p, img)
+- **Decoration Manager Tests**: Unit tests for code syntax detection including JSX expressions and sanitized text handling
+
+### Changed
+
+- **VSIX Package Optimization**: Excluded `example/`, `.trae/`, and `IDEA.md` from extension package for smaller, cleaner distribution
+
 ## [1.4.4] - 2026-02-11
 
 ### Fixed

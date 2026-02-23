@@ -1,107 +1,86 @@
-import * as vscode from "vscode";
-import * as assert from "assert";
 import { DecorationManager } from "../src/decorationManager";
-import { HTMLElement } from "../src/htmlParser";
 import { ColorFlowSettings } from "../src/settingsManager";
 
-suite("DecorationManager Tests", () => {
+describe("decorationManager", () => {
   let decorationManager: DecorationManager;
-  let mockEditor: vscode.TextEditor;
 
-  setup(() => {
+  beforeEach(() => {
     decorationManager = new DecorationManager();
-    mockEditor = {} as vscode.TextEditor;
   });
 
-  teardown(() => {
+  afterEach(() => {
     decorationManager.dispose();
   });
 
-  test("DecorationManager should be created", () => {
-    assert.ok(decorationManager);
-  });
-
-  test("applyDecorations should apply decorations with color", () => {
-    const elements: HTMLElement[] = [
-      {
-        tagName: "div",
-        attributes: {},
-        styles: {},
-        colors: { color: "red" },
-        startPosition: new vscode.Position(0, 0),
-        endPosition: new vscode.Position(0, 20),
-        textStartPosition: new vscode.Position(0, 5),
-        textEndPosition: new vscode.Position(0, 15),
-        textContent: "Test content",
-        children: [],
-        hasInlineStyle: true,
-      },
-    ];
-
+  describe("isPureCodeSyntax", () => {
     const settings: ColorFlowSettings = {
-      opacity: 0.5,
-      enableBorder: false,
-      borderColor: "currentColor",
-      borderRadius: "0px",
-      highlightMode: "char-range",
       enabled: true,
-    };
-
-    decorationManager.applyDecorations(mockEditor, elements, settings);
-  });
-
-  test("applyDecorations should clear decorations when disabled", () => {
-    const elements: HTMLElement[] = [
-      {
-        tagName: "div",
-        attributes: {},
-        styles: {},
-        colors: { color: "red" },
-        startPosition: new vscode.Position(0, 0),
-        endPosition: new vscode.Position(0, 20),
-        textStartPosition: new vscode.Position(0, 5),
-        textEndPosition: new vscode.Position(0, 15),
-        textContent: "Test content",
-        children: [],
-        hasInlineStyle: true,
-      },
-    ];
-
-    const settings: ColorFlowSettings = {
-      opacity: 0.5,
+      opacity: 0.15,
       enableBorder: false,
       borderColor: "currentColor",
       borderRadius: "0px",
       highlightMode: "char-range",
-      enabled: false,
+      enableClassHighlighting: true,
     };
 
-    decorationManager.applyDecorations(mockEditor, elements, settings);
-  });
+    test("should return false for JSX expressions with single identifier", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("{title}");
+      expect(result).toBe(false);
+    });
 
-  test("applyDecorations should skip elements without inline styles", () => {
-    const elements: HTMLElement[] = [
-      {
-        tagName: "div",
-        attributes: {},
-        styles: {},
-        colors: {},
-        startPosition: new vscode.Position(0, 0),
-        endPosition: new vscode.Position(0, 20),
-        children: [],
-        hasInlineStyle: false,
-      },
-    ];
+    test("should return false for JSX expressions with children", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("{children}");
+      expect(result).toBe(false);
+    });
 
-    const settings: ColorFlowSettings = {
-      opacity: 0.5,
-      enableBorder: false,
-      borderColor: "currentColor",
-      borderRadius: "0px",
-      highlightMode: "char-range",
-      enabled: true,
-    };
+    test("should return false for JSX expressions with dot notation", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("{props.title}");
+      expect(result).toBe(false);
+    });
 
-    decorationManager.applyDecorations(mockEditor, elements, settings);
+    test("should return false for JSX expressions with dollar sign", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("$variable");
+      expect(result).toBe(false);
+    });
+
+    test("should return false for sanitized JSX expressions (underscores)", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("_____");
+      expect(result).toBe(false);
+    });
+
+    test("should return true for pure brackets", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("{}");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for function declarations", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("function test() {");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for const declarations", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("const x = 1;");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for empty string", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for whitespace only", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("   ");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for return statements", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("return x;");
+      expect(result).toBe(true);
+    });
+
+    test("should return true for if statements", () => {
+      const result = (decorationManager as any).isPureCodeSyntax("if (x) {");
+      expect(result).toBe(true);
+    });
   });
 });

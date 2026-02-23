@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Parser, Handler } from "htmlparser2";
-import { ParsedStyles, extractColorProperties } from "./styleParser";
+import { ParsedStyles, extractColorProperties, parseStyleString } from "./styleParser";
 
 export interface HTMLElement {
   tagName: string;
@@ -71,7 +71,7 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
       if (elementStack.length > 0) {
         const element = elementStack[elementStack.length - 1];
         element.attributes = attribs;
-        element.styles = attribs.style ? parseStyle(attribs.style) : {};
+        element.styles = attribs.style ? parseStyleString(attribs.style) : {};
         element.hasInlineStyle = !!attribs.style;
         element.classes = attribs.className ? attribs.className.split(/\s+/).filter((c) => c) : (attribs.class ? attribs.class.split(/\s+/).filter((c) => c) : []);
 
@@ -126,25 +126,6 @@ export function parseHTMLDocument(document: vscode.TextDocument): ParseResult {
   parser.end();
 
   return { elements, root };
-}
-
-function parseStyle(styleString: string): { [key: string]: string } {
-  const styles: { [key: string]: string } = {};
-  const declarations = styleString.split(";");
-
-  for (const declaration of declarations) {
-    const colonIndex = declaration.indexOf(":");
-    if (colonIndex === -1) continue;
-
-    const property = declaration.substring(0, colonIndex).trim();
-    const value = declaration.substring(colonIndex + 1).trim();
-
-    if (property && value) {
-      styles[property] = value;
-    }
-  }
-
-  return styles;
 }
 
 export function findElementsByColor(

@@ -110,14 +110,17 @@ export class DecorationManager {
         return ranges;
 
       case "word-only":
-        return element.textNodes.flatMap((node) =>
-          this.getWordRanges(document, node.range, node.text)
-        );
+        return element.textNodes
+          .filter((node) => !this.isPureCodeSyntax(node.text))
+          .flatMap((node) => this.getWordRanges(document, node.range, node.text));
 
       case "char-range":
       default:
         const charRanges: vscode.Range[] = [];
         for (const node of element.textNodes) {
+          if (this.isPureCodeSyntax(node.text)) {
+            continue;
+          }
           const trimmed = this.trimWhitespaceRange(document, node.range, node.text);
           if (!trimmed.isEmpty) {
             charRanges.push(trimmed);
@@ -125,6 +128,51 @@ export class DecorationManager {
         }
         return charRanges;
     }
+  }
+
+  private isPureCodeSyntax(text: string): boolean {
+    const trimmed = text.trim();
+    if (trimmed.length === 0) return true;
+
+    // Match sanitized JSX expressions (underscores representing {expression})
+    // These were originally JSX expressions and should NOT be filtered out
+    if (/^_+$/.test(trimmed)) return false;
+
+    // Match JSX expressions with single identifier (e.g., {title}, {children})
+    // These are NOT pure code syntax - they render as content
+    if (/^\{[\w.$]+\}$/.test(trimmed)) return false;
+
+    // Match pure code syntax characters (brackets, braces, parentheses, etc.)
+    if (/^[\s\r\n{}();,_]*$/.test(trimmed)) return true;
+
+    // Match common JavaScript/TypeScript keywords and patterns
+    // Only filter if it's actual code syntax, not just a variable name
+    const codePatterns = [
+      /^function\s+\w+\s*\(/,
+      /^const\s+\[.*\]\s*=/,
+      /^const\s+\w+\s*=/,
+      /^let\s+\[.*\]\s*=/,
+      /^let\s+\w+\s*=/,
+      /^var\s+\[.*\]\s*=/,
+      /^var\s+\w+\s*=/,
+      /^import\s+.*from/,
+      /^export\s+(default|const|function|class)/,
+      /^return\s+[^{].*;?$/,
+      /^for\s*\(\s*\w+\s*of\s*/,
+      /^if\s*\(\s*\w+.*\)/,
+      /^else\s*{/,
+      /^try\s*{/,
+      /^catch\s*\(\s*\w+/,
+      /^\w+\s*\(\s*\w+\s*\)\s*=>/,
+      /^\w+\s*\(\s*\w+\s*\)\s*{/,
+      /^await\s+\w+\s*=/,
+      /^async\s+function/,
+      /^async\s*\(\s*\w+\s*\)\s*=>/,
+      /^class\s+\w+\s*\{/,
+      /^\w+\[\]\s*=\s*\w+/,
+    ];
+
+    return codePatterns.some(pattern => pattern.test(trimmed));
   }
 
   private getWordRanges(

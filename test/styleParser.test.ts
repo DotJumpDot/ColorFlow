@@ -1,90 +1,161 @@
-import * as assert from "assert";
 import {
   parseStyleString,
   extractColorProperties,
   isColorProperty,
   getStyleProperties,
+  ParsedStyles,
+  StyleProperty,
 } from "../src/styleParser";
 
-suite("StyleParser Tests", () => {
-  test("parseStyleString should parse simple style", () => {
-    const result = parseStyleString("color: red; background-color: blue;");
-    assert.deepStrictEqual(result, { color: "red", "background-color": "blue" });
-  });
+describe("styleParser", () => {
+  describe("parseStyleString", () => {
+    test("should parse simple style string", () => {
+      const result = parseStyleString("color: red; background: blue;");
+      expect(result).toEqual({
+        color: "red",
+        background: "blue",
+      });
+    });
 
-  test("parseStyleString should handle empty style", () => {
-    const result = parseStyleString("");
-    assert.deepStrictEqual(result, {});
-  });
+    test("should parse style string with kebab-case properties", () => {
+      const result = parseStyleString("background-color: blue; font-size: 16px;");
+      expect(result).toEqual({
+        "background-color": "blue",
+        "font-size": "16px",
+      });
+    });
 
-  test("parseStyleString should handle whitespace", () => {
-    const result = parseStyleString("  color  :  red  ;  ");
-    assert.deepStrictEqual(result, { color: "red" });
-  });
+    test("should parse style string with camelCase properties", () => {
+      const result = parseStyleString("backgroundColor: blue; fontSize: 16px;");
+      expect(result).toEqual({
+        backgroundColor: "blue",
+        fontSize: "16px",
+      });
+    });
 
-  test("parseStyleString should handle camelCase properties", () => {
-    const result = parseStyleString("backgroundColor: blue; fontSize: 16px;");
-    assert.deepStrictEqual(result, { backgroundColor: "blue", fontSize: "16px" });
-  });
+    test("should handle whitespace around properties and values", () => {
+      const result = parseStyleString("  color  :  red  ;  background  :  blue  ;  ");
+      expect(result).toEqual({
+        color: "red",
+        background: "blue",
+      });
+    });
 
-  test("parseStyleString should handle multiple declarations", () => {
-    const result = parseStyleString("color: red; background: blue; margin: 10px; padding: 5px;");
-    assert.deepStrictEqual(result, {
-      color: "red",
-      background: "blue",
-      margin: "10px",
-      padding: "5px",
+    test("should return empty object for empty string", () => {
+      const result = parseStyleString("");
+      expect(result).toEqual({});
+    });
+
+    test("should return empty object for whitespace only", () => {
+      const result = parseStyleString("   ");
+      expect(result).toEqual({});
+    });
+
+    test("should ignore malformed declarations", () => {
+      const result = parseStyleString("color:red; malformed; background:blue;");
+      expect(result).toEqual({
+        color: "red",
+        background: "blue",
+      });
+    });
+
+    test("should handle declarations without trailing semicolon", () => {
+      const result = parseStyleString("color: red; background: blue");
+      expect(result).toEqual({
+        color: "red",
+        background: "blue",
+      });
     });
   });
 
-  test("parseStyleString should ignore empty declarations", () => {
-    const result = parseStyleString("color: red;; background: blue;");
-    assert.deepStrictEqual(result, { color: "red", background: "blue" });
+  describe("extractColorProperties", () => {
+    test("should extract color property", () => {
+      const styles: ParsedStyles = { color: "red", fontSize: "16px" };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({ color: "red" });
+    });
+
+    test("should extract background-color property", () => {
+      const styles: ParsedStyles = { "background-color": "blue", fontSize: "16px" };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({ backgroundColor: "blue" });
+    });
+
+    test("should extract backgroundColor property", () => {
+      const styles: ParsedStyles = { backgroundColor: "blue", fontSize: "16px" };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({ backgroundColor: "blue" });
+    });
+
+    test("should extract both color and background properties", () => {
+      const styles: ParsedStyles = { color: "red", "background-color": "blue", fontSize: "16px" };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({ color: "red", backgroundColor: "blue" });
+    });
+
+    test("should prefer backgroundColor over background-color when both exist", () => {
+      const styles: ParsedStyles = {
+        "background-color": "blue",
+        backgroundColor: "green",
+        color: "red",
+      };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({ color: "red", backgroundColor: "green" });
+    });
+
+    test("should return empty object when no color properties exist", () => {
+      const styles: ParsedStyles = { fontSize: "16px", fontWeight: "bold" };
+      const result = extractColorProperties(styles);
+      expect(result).toEqual({});
+    });
   });
 
-  test("extractColorProperties should extract color", () => {
-    const styles = { color: "red", fontSize: "16px" };
-    const result = extractColorProperties(styles);
-    assert.deepStrictEqual(result, { color: "red" });
+  describe("isColorProperty", () => {
+    test("should return true for color property", () => {
+      expect(isColorProperty("color")).toBe(true);
+    });
+
+    test("should return true for background-color property", () => {
+      expect(isColorProperty("background-color")).toBe(true);
+    });
+
+    test("should return true for backgroundColor property", () => {
+      expect(isColorProperty("backgroundColor")).toBe(true);
+    });
+
+    test("should return false for other properties", () => {
+      expect(isColorProperty("fontSize")).toBe(false);
+      expect(isColorProperty("fontWeight")).toBe(false);
+      expect(isColorProperty("margin")).toBe(false);
+    });
   });
 
-  test("extractColorProperties should extract background-color", () => {
-    const styles = { "background-color": "blue", fontSize: "16px" };
-    const result = extractColorProperties(styles);
-    assert.deepStrictEqual(result, { backgroundColor: "blue" });
-  });
+  describe("getStyleProperties", () => {
+    test("should convert style string to array of StyleProperty objects", () => {
+      const result = getStyleProperties("color: red; background: blue;");
+      expect(result).toEqual([
+        { property: "color", value: "red" },
+        { property: "background", value: "blue" },
+      ]);
+    });
 
-  test("extractColorProperties should extract backgroundColor", () => {
-    const styles = { backgroundColor: "green", fontSize: "16px" };
-    const result = extractColorProperties(styles);
-    assert.deepStrictEqual(result, { backgroundColor: "green" });
-  });
+    test("should handle empty style string", () => {
+      const result = getStyleProperties("");
+      expect(result).toEqual([]);
+    });
 
-  test("extractColorProperties should extract both colors", () => {
-    const styles = { color: "red", "background-color": "blue" };
-    const result = extractColorProperties(styles);
-    assert.deepStrictEqual(result, { color: "red", backgroundColor: "blue" });
-  });
+    test("should handle whitespace style string", () => {
+      const result = getStyleProperties("   ");
+      expect(result).toEqual([]);
+    });
 
-  test("extractColorProperties should return empty object for no colors", () => {
-    const styles = { fontSize: "16px", margin: "10px" };
-    const result = extractColorProperties(styles);
-    assert.deepStrictEqual(result, {});
-  });
-
-  test("isColorProperty should identify color properties", () => {
-    assert.strictEqual(isColorProperty("color"), true);
-    assert.strictEqual(isColorProperty("background-color"), true);
-    assert.strictEqual(isColorProperty("backgroundColor"), true);
-    assert.strictEqual(isColorProperty("fontSize"), false);
-    assert.strictEqual(isColorProperty("margin"), false);
-  });
-
-  test("getStyleProperties should return array of properties", () => {
-    const styles = "color: red; background: blue;";
-    const result = getStyleProperties(styles);
-    assert.strictEqual(result.length, 2);
-    assert.deepStrictEqual(result[0], { property: "color", value: "red" });
-    assert.deepStrictEqual(result[1], { property: "background", value: "blue" });
+    test("should preserve property order", () => {
+      const result = getStyleProperties("margin: 0; padding: 10px; color: red;");
+      expect(result).toEqual([
+        { property: "margin", value: "0" },
+        { property: "padding", value: "10px" },
+        { property: "color", value: "red" },
+      ]);
+    });
   });
 });

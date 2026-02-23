@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Parser, Handler } from "htmlparser2";
 import { HTMLElement, ParseResult } from "./htmlParser";
-import { extractColorProperties } from "./styleParser";
+import { extractColorProperties, parseStyleString } from "./styleParser";
 
 const STYLE_OBJECT_REGEX = /style=\{\{([\s\S]*?)\}\}/g;
 
@@ -30,62 +30,180 @@ export function parseReactStyleObject(styleString: string): { [key: string]: str
 }
 
 /**
- * Sanitizes JSX/TSX text by replacing attribute values that use { ... } with underscores.
- * This prevents htmlparser2 from breaking on characters like '>' inside JSX expressions
- * (common in arrow functions like onClick={() => ...}) while they are inside a tag.
- * Length is preserved to keep document offsets accurate.
+ * Logic patterns that indicate this is code/logic, not just a simple value.
  */
-function sanitizeJSXAttributes(text: string): string {
-  const regex = /([a-zA-Z0-9-]+\s*=\s*\{)/g;
-  let match;
-  let lastIndex = 0;
-  let sanitizedText = "";
+function isComplexExpression(content: string): boolean {
+  if (content.includes("\n")) return true;
+  if (content.includes("{") || content.includes("}")) return true;
 
-  while ((match = regex.exec(text)) !== null) {
-    // Add text up to the start of the attribute value
-    sanitizedText += text.substring(lastIndex, match.index + match[1].length);
+  const complexPatterns = [
+    "=>",
+    "function",
+    ".map(",
+    ".filter(",
+    ".reduce(",
+    "&&",
+    "||",
+    "?",
+    ";",
+    "return",
+    "const ",
+    "let ",
+    "var ",
+  ];
+  return complexPatterns.some((pattern) => content.includes(pattern));
+}
 
-    let i = match.index + match[1].length;
-    let depth = 1;
-    let inString: string | null = null;
-    let start = i;
+/**
+ * Recursively processes a JSX { } block and returns a masked version.
+ * Complex logic is masked with spaces to avoid highlighting.
+ * Simple expressions are masked with underscores to allow highlighting.
+ * Tags and their children are preserved for the parser.
+ */
+function processJSXBlock(text: string, start: number): { masked: string; end: number } {
+  let depth = 1;
+  let j = start + 1;
+  let inString: string | null = null;
 
-    while (i < text.length && depth > 0) {
-      const char = text[i];
-      if (inString) {
-        if (char === inString && (i === 0 || text[i - 1] !== "\\")) {
-          inString = null;
-        }
-      } else {
-        if (char === '"' || char === "'" || char === "`") {
-          inString = char;
-        } else if (char === "{") {
-          depth++;
-        } else if (char === "}") {
-          depth--;
-        }
+  while (j < text.length && depth > 0) {
+    const char = text[j];
+    if (inString) {
+      if (char === inString && (j === 0 || text[j - 1] !== "\\")) {
+        inString = null;
       }
-      i++;
+    } else {
+      if (char === '"' || char === "'" || char === "`") {
+        inString = char;
+      } else if (char === "{") {
+        depth++;
+      } else if (char === "}") {
+        depth--;
+      }
     }
-
-    // Replace the content of the attribute value with underscores, keeping the closing brace
-    const contentLen = i - 1 - start;
-    sanitizedText += "_".repeat(Math.max(0, contentLen)) + "}";
-    lastIndex = i;
+    if (depth > 0) j++;
   }
 
-  // Add the remaining text
-  sanitizedText += text.substring(lastIndex);
-  return sanitizedText;
+  const content = text.substring(start + 1, j);
+
+  // If it's complex or contains tags, we need to be careful
+  if (isComplexExpression(content) || content.includes("<")) {
+    let masked = "{";
+    let k = 0;
+    let inTag = false;
+    let tagStack: string[] = [];
+
+    while (k < content.length) {
+      const char = content[k];
+
+      if (char === "<") {
+        inTag = true;
+        masked += "<";
+        k++;
+
+        // Peek for tag type
+        if (content[k] === "/") {
+          // Closing tag </name>
+          masked += "/";
+          k++;
+          const match = content.substring(k).match(/^([a-zA-Z0-9:-]*)/);
+          const tagName = match ? match[1] : "";
+          if (tagName) {
+            if (tagStack.length > 0 && tagStack[tagStack.length - 1] === tagName) {
+              tagStack.pop();
+            }
+            masked += tagName;
+            k += tagName.length;
+          }
+        } else if (content[k] === ">") {
+          // Fragment opening <>
+          tagStack.push("");
+          masked += ">";
+          k++;
+          inTag = false;
+        } else {
+          // Opening tag <name or self-closing fragment </> (though </> is rare)
+          const match = content.substring(k).match(/^([a-zA-Z0-9:-]*)/);
+          const tagName = match ? match[1] : "";
+          if (tagName) {
+            tagStack.push(tagName);
+            masked += tagName;
+            k += tagName.length;
+          }
+        }
+        continue;
+      }
+
+      if (char === ">" && inTag) {
+        // Check for self-closing tag <br />
+        if (content[k - 1] === "/") {
+          tagStack.pop();
+        }
+        inTag = false;
+        masked += ">";
+        k++;
+        continue;
+      }
+
+      if (char === "{" && (inTag || tagStack.length > 0)) {
+        // Nested block inside a tag or as a child of a tag
+        const nested = processJSXBlock(content, k);
+        masked += nested.masked;
+        k = nested.end + 1;
+        continue;
+      }
+
+      if (char === "{" && !inTag && tagStack.length === 0) {
+        // Nested block in logic area (e.g. { { ... } })
+        const nested = processJSXBlock(content, k);
+        masked += nested.masked;
+        k = nested.end + 1;
+        continue;
+      }
+
+      // Regular character
+      if (inTag || tagStack.length > 0) {
+        masked += char; // Preserve JSX content
+      } else {
+        // Logic part - replace with space (preserve newlines for offsets)
+        masked += char === "\n" || char === "\r" ? char : " ";
+      }
+      k++;
+    }
+    return { masked: masked + "}", end: j };
+  } else {
+    // Simple expression - mask with underscores to keep it "highlightable" as a word
+    return { masked: "{" + "_".repeat(content.length) + "}", end: j };
+  }
+}
+
+/**
+ * Sanitizes JSX/TSX text by masking logic blocks while preserving tags.
+ * This prevents htmlparser2 from breaking on characters like '>' inside logic
+ * and also prevents the decoration manager from highlighting complex code.
+ */
+function sanitizeJSX(text: string): string {
+  let sanitized = "";
+  let i = 0;
+
+  while (i < text.length) {
+    if (text[i] === "{") {
+      const { masked, end } = processJSXBlock(text, i);
+      sanitized += masked;
+      i = end + 1;
+    } else {
+      sanitized += text[i];
+      i++;
+    }
+  }
+  return sanitized;
 }
 
 export function parseReactDocument(document: vscode.TextDocument): ParseResult {
   const originalText = document.getText();
 
-  // Sanitize text: replace JSX attribute values { ... } with underscores to avoid breaking htmlparser2.
-  // This prevents the parser from getting confused by '>' in arrow functions inside attributes.
-  // We keep the length the same to preserve offsets.
-  const sanitizedText = sanitizeJSXAttributes(originalText);
+  // Sanitize text: mask logic blocks { ... } to avoid breaking htmlparser2
+  // and to prevent highlighting of complex logic.
+  const sanitizedText = sanitizeJSX(originalText);
 
   const elements: HTMLElement[] = [];
   const elementStack: HTMLElement[] = [];
@@ -152,18 +270,17 @@ export function parseReactDocument(document: vscode.TextDocument): ParseResult {
 
         if (styleMatch) {
           element.hasInlineStyle = true;
-          const styleBody = styleMatch[1]; // Content inside {{ }}
-          element.styles = parseReactStyleObject(styleBody);
+          const styleBody = styleMatch[1];
+          const objStyles = parseReactStyleObject(styleBody);
+          element.styles = { ...element.styles, ...objStyles };
 
-          const colorValue = element.styles.color;
-          const bgColorValue = element.styles.backgroundColor || element.styles.background;
-
-          if (colorValue) element.colors.color = colorValue;
-          if (bgColorValue) element.colors.backgroundColor = bgColorValue;
+          const colors = extractColorProperties(objStyles);
+          if (colors.color) element.colors.color = colors.color;
+          if (colors.backgroundColor) element.colors.backgroundColor = colors.backgroundColor;
         } else if (attribs.style && attribs.style.trim().length > 0) {
           // Handle normal style="..." if present and NOT our sanitized spaces
           // Our sanitized style contains only spaces.
-          const styles = parseSimpleStyle(attribs.style);
+          const styles = parseStyleString(attribs.style);
           element.styles = { ...element.styles, ...styles };
 
           // Extract colors from parsed styles
@@ -218,17 +335,4 @@ export function parseReactDocument(document: vscode.TextDocument): ParseResult {
   parser.end();
 
   return { elements, root };
-}
-
-function parseSimpleStyle(styleString: string): { [key: string]: string } {
-  const styles: { [key: string]: string } = {};
-  const declarations = styleString.split(";");
-  for (const declaration of declarations) {
-    const colonIndex = declaration.indexOf(":");
-    if (colonIndex === -1) continue;
-    const property = declaration.substring(0, colonIndex).trim();
-    const value = declaration.substring(colonIndex + 1).trim();
-    if (property && value) styles[property] = value;
-  }
-  return styles;
 }
