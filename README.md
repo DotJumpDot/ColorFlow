@@ -56,7 +56,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.5.0                                                                                   |
+| **Version**        | 1.5.1                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---
@@ -227,7 +227,7 @@ Determines how much of the text to highlight.
 
 #### `colorFlow.enableClassHighlighting`
 
-Enables highlighting for colors defined in CSS classes within `<style>` tags.
+Enables highlighting for colors defined in CSS classes within `<style>` tags and linked CSS files.
 
 - **Type:** `boolean`
 - **Default:** `true`
@@ -239,7 +239,7 @@ Enables highlighting for colors defined in CSS classes within `<style>` tags.
 }
 ```
 
-**Note:** This feature parses CSS rules from style blocks and applies colors to elements that reference those classes via `class` attributes.
+**Note:** This feature parses CSS rules from style blocks and external CSS files, then applies colors to elements that reference those classes via `class` attributes. It also resolves CSS custom properties (variables) like `var(--my-color)`.
 
 ---
 
@@ -293,11 +293,12 @@ graph LR
 
 1. **Document Parsing** - Uses `htmlparser2` for fast, accurate HTML parsing
 2. **Style Extraction** - Identifies elements with inline `style` attributes
-3. **CSS Parsing** - Extracts CSS rules from `<style>` tags for class-based highlighting
-4. **Color Detection** - Extracts `color`, `background-color`, and `backgroundColor` properties
-5. **Color Conversion** - Converts all formats to RGBA with configured opacity using `tinycolor2`
-6. **Range Calculation** - Determines precise text ranges based on selected highlight mode
-7. **Decoration Application** - Applies VS Code text decorations with real-time updates
+3. **CSS Parsing** - Extracts CSS rules from `<style>` tags and linked external CSS files
+4. **CSS Variables** - Parses custom properties and resolves `var(--name)` references with fallback support
+5. **Color Detection** - Extracts `color`, `background-color`, and `backgroundColor` properties
+6. **Color Conversion** - Converts all formats to RGBA with configured opacity using `tinycolor2`
+7. **Range Calculation** - Determines precise text ranges based on selected highlight mode
+8. **Decoration Application** - Applies VS Code text decorations with real-time updates
 
 ---
 
@@ -308,16 +309,17 @@ Color Flow is designed for inline styles and class-based colors and currently su
 ✅ **Supported:**
 
 - Inline styles (`style="..."` attributes)
-- CSS class definitions (`.class { color: red; }`) within `<style>` tags
+- CSS class definitions (`.class { color: red; }`) within `<style>` tags and linked CSS files
+- CSS custom properties (variables) like `var(--my-color)` with fallback support
 - Direct color values (named, hex, rgb, hsl)
 - Color inheritance from parent elements (nested elements inherit colors from ancestors)
 - Real-time updates during editing
 
 ❌ **Not Supported:**
 
-- CSS variables (`var(--my-color)`)
-- External CSS files
 - Computed styles from JavaScript
+- Dynamic color values from CSS expressions
+- CSS variables defined in browser developer tools
 
 ---
 
@@ -446,13 +448,13 @@ Color Flow is optimized for minimal performance impact:
 
 Future enhancements planned:
 
-- [ ] Support for CSS variables
 - [ ] Color picker integration
 - [ ] Custom color themes
 - [ ] Export color palette
 - [ ] Support for computed styles
 - [ ] Color contrast checker
 - [ ] Additional highlight modes
+- [ ] CSS @import support (importing external CSS from within CSS files)
 
 ---
 

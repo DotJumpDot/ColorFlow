@@ -4,6 +4,16 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.1] - 2026-02-23
+
+### Changed
+
+- **Documentation Updates**: Updated README, CHANGELOG, and AGENTS.md to reflect new features
+  - Updated Limitations section to show CSS variables and external CSS as supported
+  - Updated Technical Details to include CSS Variables parsing
+  - Updated Roadmap to remove implemented features
+  - Updated Configuration documentation for class highlighting settings
+
 ## [1.5.0] - 2026-02-23
 
 ### Added
