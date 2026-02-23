@@ -1,4 +1,9 @@
-import { parseCSSStyles, ClassColorDefinition } from "../src/cssParser";
+import {
+  parseCSSStyles,
+  parseCSSVariables,
+  ClassColorDefinition,
+  CSSVariableDefinition,
+} from "../src/cssParser";
 
 describe("cssParser", () => {
   describe("parseCSSStyles", () => {
@@ -133,6 +138,71 @@ describe("cssParser", () => {
       const css = ".text_red { color: red; }";
       const result = parseCSSStyles(css);
       expect(result.get("text_red")).toEqual({ className: "text_red", color: "red" });
+    });
+  });
+
+  describe("parseCSSVariables", () => {
+    test("should parse CSS custom properties", () => {
+      const css = ":root { --primary-color: #ff0000; --secondary-color: #00ff00; }";
+      const result = parseCSSVariables(css);
+      expect(result.size).toBe(2);
+      expect(result.get("primary-color")).toEqual({ name: "primary-color", value: "#ff0000" });
+      expect(result.get("secondary-color")).toEqual({ name: "secondary-color", value: "#00ff00" });
+    });
+
+    test("should parse CSS variables with various color formats", () => {
+      const css = ":root { --color-1: red; --color-2: #00ff00; --color-3: rgb(0,0,255); }";
+      const result = parseCSSVariables(css);
+      expect(result.get("color-1")).toEqual({ name: "color-1", value: "red" });
+      expect(result.get("color-2")).toEqual({ name: "color-2", value: "#00ff00" });
+      expect(result.get("color-3")).toEqual({ name: "color-3", value: "rgb(0,0,255)" });
+    });
+
+    test("should parse CSS variables from any selector", () => {
+      const css = ".theme-dark { --bg-color: #1a1a1a; --text-color: #ffffff; }";
+      const result = parseCSSVariables(css);
+      expect(result.get("bg-color")).toEqual({ name: "bg-color", value: "#1a1a1a" });
+      expect(result.get("text-color")).toEqual({ name: "text-color", value: "#ffffff" });
+    });
+
+    test("should handle CSS variables with hyphens and underscores", () => {
+      const css = ":root { --my-color: #ff0000; --color_var: #00ff00; --theme-color-1: #0000ff; }";
+      const result = parseCSSVariables(css);
+      expect(result.get("my-color")).toEqual({ name: "my-color", value: "#ff0000" });
+      expect(result.get("color_var")).toEqual({ name: "color_var", value: "#00ff00" });
+      expect(result.get("theme-color-1")).toEqual({ name: "theme-color-1", value: "#0000ff" });
+    });
+
+    test("should ignore non-variable properties", () => {
+      const css = ":root { --primary-color: #ff0000; color: red; font-size: 16px; }";
+      const result = parseCSSVariables(css);
+      expect(result.size).toBe(1);
+      expect(result.get("primary-color")).toEqual({ name: "primary-color", value: "#ff0000" });
+    });
+
+    test("should handle empty CSS text", () => {
+      const result = parseCSSVariables("");
+      expect(result.size).toBe(0);
+    });
+
+    test("should handle CSS comments", () => {
+      const css = "/* CSS Variables */ :root { --primary-color: #ff0000; }";
+      const result = parseCSSVariables(css);
+      expect(result.get("primary-color")).toEqual({ name: "primary-color", value: "#ff0000" });
+    });
+
+    test("should parse variables with complex values", () => {
+      const css = ":root { --shadow: 0 2px 4px rgba(0,0,0,0.1); --transition: all 0.3s ease; }";
+      const result = parseCSSVariables(css);
+      expect(result.get("shadow")).toEqual({ name: "shadow", value: "0 2px 4px rgba(0,0,0,0.1)" });
+      expect(result.get("transition")).toEqual({ name: "transition", value: "all 0.3s ease" });
+    });
+
+    test("should parse variables with fallback values", () => {
+      const css = ":root { --primary: #ff0000; --secondary: var(--primary, #00ff00); }";
+      const result = parseCSSVariables(css);
+      expect(result.get("primary")).toEqual({ name: "primary", value: "#ff0000" });
+      expect(result.get("secondary")).toEqual({ name: "secondary", value: "var(--primary, #00ff00)" });
     });
   });
 });

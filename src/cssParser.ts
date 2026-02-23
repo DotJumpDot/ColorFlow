@@ -4,6 +4,11 @@ export interface ClassColorDefinition {
   backgroundColor?: string;
 }
 
+export interface CSSVariableDefinition {
+  name: string;
+  value: string;
+}
+
 export function parseCSSStyles(cssText: string): Map<string, ClassColorDefinition> {
   const classColors = new Map<string, ClassColorDefinition>();
 
@@ -34,6 +39,28 @@ export function parseCSSStyles(cssText: string): Map<string, ClassColorDefinitio
   }
 
   return classColors;
+}
+
+export function parseCSSVariables(cssText: string): Map<string, CSSVariableDefinition> {
+  const variables = new Map<string, CSSVariableDefinition>();
+
+  const rules = extractCSSRules(cssText);
+
+  for (const rule of rules) {
+    if (!rule.declarations) continue;
+
+    for (const declaration of rule.declarations) {
+      if (declaration.property && declaration.property.startsWith("--")) {
+        const varName = declaration.property.substring(2);
+        variables.set(varName, {
+          name: varName,
+          value: declaration.value,
+        });
+      }
+    }
+  }
+
+  return variables;
 }
 
 function extractCSSRules(cssText: string): CSSRule[] {

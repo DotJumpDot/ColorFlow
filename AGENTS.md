@@ -173,6 +173,42 @@ getStyleProperties("color: red; background: blue;");
 
 ---
 
+### `resolveCSSVariable(value: string, cssVariables: Map<string, CSSVariableDefinition>): string`
+
+Resolves CSS custom property references (`var(--name)`) to their actual values.
+
+**Parameters:**
+
+- `value` (string): CSS property value that may contain CSS variable references
+- `cssVariables` (Map<string, CSSVariableDefinition>): Map of CSS variable definitions
+
+**Returns:**
+
+- `string`: Resolved value with CSS variables replaced by their actual values
+
+**Behavior:**
+
+- Parses `var(--variable-name)` syntax
+- Supports fallback values: `var(--missing, fallback-color)`
+- Handles nested variables (variables that reference other variables)
+- Prevents infinite loops (max 10 iterations)
+- Works with multiple variables in a single value
+
+**Example:**
+
+```typescript
+const variables = new Map([
+  ["primary", { name: "primary", value: "#ff0000" }],
+  ["secondary", { name: "secondary", value: "#00ff00" }],
+]);
+
+resolveCSSVariable("var(--primary)", variables); // Returns: "#ff0000"
+resolveCSSVariable("var(--missing, #000)", variables); // Returns: "#000"
+resolveCSSVariable("border: 1px solid var(--primary)", variables); // Returns: "border: 1px solid #ff0000"
+```
+
+---
+
 ## CSSParser Module
 
 ### `parseCSSStyles(cssText: string): Map<string, ClassColorDefinition>`
@@ -260,6 +296,35 @@ Removes CSS comments from text.
 **Implementation:**
 
 - Uses regex `/\/\*[\s\S]*?\*\//g` to match multi-line comments
+
+---
+
+### `parseCSSVariables(cssText: string): Map<string, CSSVariableDefinition>`
+
+Parses CSS text and extracts CSS custom properties (variables).
+
+**Parameters:**
+
+- `cssText` (string): CSS text content (from `<style>` tags or external CSS files)
+
+**Returns:**
+
+- `Map<string, CSSVariableDefinition>`: Map of variable names to their definitions
+
+**Behavior:**
+
+- Extracts CSS rules using regex pattern matching
+- Finds all properties starting with `--` (custom properties)
+- Stores both property name and value for later resolution
+
+**Example:**
+
+```typescript
+const css = ":root { --primary-color: #ff0000; --secondary-color: #00ff00; }";
+const variables = parseCSSVariables(css);
+console.log(variables.get("primary-color")); // { name: "primary-color", value: "#ff0000" }
+console.log(variables.get("secondary-color")); // { name: "secondary-color", value: "#00ff00" }
+```
 
 ---
 
@@ -357,6 +422,7 @@ const range = getElementFullRange(element);
 ```
 
 ---
+
 ## ReactParser Module
 
 ### `parseReactDocument(document: vscode.TextDocument): ParseResult`
@@ -434,7 +500,7 @@ Sanitizes JSX/TSX text by masking logic blocks while preserving tags.
 **Example:**
 
 ```typescript
-const sanitized = sanitizeJSX('<div>{title}</div>');
+const sanitized = sanitizeJSX("<div>{title}</div>");
 console.log(sanitized); // '<div>{_____}</div>' (title becomes underscores)
 ```
 
@@ -718,6 +784,37 @@ export function activate(context: vscode.ExtensionContext) {
   // Extension initialization code
 }
 ```
+
+---
+
+### `extractCSSFromDocument(document: vscode.TextDocument): string`
+
+Extracts CSS content from both inline `<style>` tags and linked external CSS files.
+
+**Parameters:**
+
+- `document` (vscode.TextDocument): VS Code text document to parse
+
+**Returns:**
+
+- `string`: Combined CSS content from all sources
+
+**Behavior:**
+
+- Extracts CSS from `<style>` tags using regex pattern matching
+- Finds all `<link rel="stylesheet">` tags and extracts href attributes
+- Reads external CSS files from the filesystem using Node.js `fs` module
+- Combines all CSS content for variable and class resolution
+- Handles errors gracefully if external CSS files cannot be read
+
+**Example:**
+
+```typescript
+const cssContent = extractCSSFromDocument(editor.document);
+// Returns CSS from both <style> tags and linked CSS files
+```
+
+**Note:** This function enables CSS variables and class-based colors defined in external stylesheets to work with Color Flow highlighting.
 
 ---
 

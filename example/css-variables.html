@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Variables Color Flow Example</title>
+    <style>
+        :root {
+            --primary-color: #ff0000;
+            --secondary-color: #00ff00;
+            --accent-color: #0000ff;
+            --text-color: #333333;
+            --light-bg: #f5f5f5;
+            --warning-color: #ff9800;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --info-color: #2196f3;
+            --purple: #9c27b0;
+            --teal: #009688;
+            --orange: #ff5722;
+        }
+
+        .basic-text { color: var(--text-color); }
+        .primary-text { color: var(--primary-color); }
+        .secondary-text { color: var(--secondary-color); }
+        .accent-text { color: var(--accent-color); }
+        .warning-text { color: var(--warning-color); }
+        .success-text { color: var(--success-color); }
+        .danger-text { color: var(--danger-color); }
+        .info-text { color: var(--info-color); }
+        .purple-text { color: var(--purple); }
+        .teal-text { color: var(--teal); }
+        .orange-text { color: var(--orange); }
+        .light-bg { background-color: var(--light-bg); color: var(--text-color); }
+        .primary-bg { background-color: var(--primary-color); color: white; }
+        .secondary-bg { background-color: var(--secondary-color); color: white; }
+        .accent-bg { background-color: var(--accent-color); color: white; }
+        .warning-bg { background-color: var(--warning-color); color: white; }
+        .success-bg { background-color: var(--success-color); color: white; }
+        .danger-bg { background-color: var(--danger-color); color: white; }
+        .info-bg { background-color: var(--info-color); color: white; }
+        .purple-bg { background-color: var(--purple); color: white; }
+        .teal-bg { background-color: var(--teal); color: white; }
+        .orange-bg { background-color: var(--orange); color: white; }
+        .mixed-primary { color: var(--text-color); background-color: var(--primary-color); }
+        .mixed-secondary { color: var(--text-color); background-color: var(--secondary-color); }
+        .mixed-accent { color: var(--text-color); background-color: var(--accent-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSS Variables Color Flow Example</h1>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Basic Text Colors</h2>
+            <p class="basic-text">This text uses the basic text color variable (--text-color)</p>
+            <p class="primary-text">This text uses the primary color variable (--primary-color)</p>
+            <p class="secondary-text">This text uses the secondary color variable (--secondary-color)</p>
+            <p class="accent-text">This text uses the accent color variable (--accent-color)</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Semantic Colors</h2>
+            <p class="warning-text">Warning text using --warning-color</p>
+            <p class="success-text">Success text using --success-color</p>
+            <p class="danger-text">Danger text using --danger-color</p>
+            <p class="info-text">Info text using --info-color</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Additional Colors</h2>
+            <p class="purple-text">Purple text using --purple</p>
+            <p class="teal-text">Teal text using --teal</p>
+            <p class="orange-text">Orange text using --orange</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Background Colors</h2>
+            <div class="light-bg" style="padding: 10px; margin: 5px;">
+                Light background with text color
+            </div>
+            <div class="primary-bg" style="padding: 10px; margin: 5px;">
+                Primary background with white text
+            </div>
+            <div class="secondary-bg" style="padding: 10px; margin: 5px;">
+                Secondary background with white text
+            </div>
+            <div class="accent-bg" style="padding: 10px; margin: 5px;">
+                Accent background with white text
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Semantic Backgrounds</h2>
+            <div class="warning-bg" style="padding: 10px; margin: 5px;">
+                Warning background
+            </div>
+            <div class="success-bg" style="padding: 10px; margin: 5px;">
+                Success background
+            </div>
+            <div class="danger-bg" style="padding: 10px; margin: 5px;">
+                Danger background
+            </div>
+            <div class="info-bg" style="padding: 10px; margin: 5px;">
+                Info background
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>More Background Colors</h2>
+            <div class="purple-bg" style="padding: 10px; margin: 5px;">
+                Purple background
+            </div>
+            <div class="teal-bg" style="padding: 10px; margin: 5px;">
+                Teal background
+            </div>
+            <div class="orange-bg" style="padding: 10px; margin: 5px;">
+                Orange background
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Mixed Colors</h2>
+            <div class="mixed-primary" style="padding: 10px; margin: 5px;">
+                Text color and primary background
+            </div>
+            <div class="mixed-secondary" style="padding: 10px; margin: 5px;">
+                Text color and secondary background
+            </div>
+            <div class="mixed-accent" style="padding: 10px; margin: 5px;">
+                Text color and accent background
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Inline Styles with CSS Variables</h2>
+            <p style="color: var(--primary-color);">Inline style with primary color</p>
+            <p style="color: var(--secondary-color);">Inline style with secondary color</p>
+            <p style="color: var(--accent-color);">Inline style with accent color</p>
+            <p style="background-color: var(--warning-color); color: white; padding: 10px;">Inline style with warning background</p>
+            <p style="background-color: var(--success-color); color: white; padding: 10px;">Inline style with success background</p>
+            <p style="color: var(--text-color); background-color: var(--light-bg); padding: 10px;">
+                Inline style with text and light background
+            </p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Nested Elements with CSS Variables</h2>
+            <div style="color: var(--primary-color);">
+                <p>Parent with primary color</p>
+                <p>Child element inherits color</p>
+                <span>Span also inherits</span>
+            </div>
+            <div style="background-color: var(--secondary-color); color: white; padding: 10px; margin-top: 10px;">
+                <p>Parent with secondary background</p>
+                <p>Child elements inherit</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

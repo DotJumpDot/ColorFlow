@@ -75,3 +75,33 @@ export function getStyleProperties(styleString: string): StyleProperty[] {
 
   return properties;
 }
+
+export function resolveCSSVariable(
+  value: string,
+  cssVariables: Map<string, { name: string; value: string }>
+): string {
+  const varRegex = /var\((--[a-zA-Z0-9-_]+)(?:\s*,\s*([^)]+))?\)/g;
+  let resolved = value;
+  let match;
+
+  const maxIterations = 10;
+  let iterations = 0;
+
+  while ((match = varRegex.exec(resolved)) !== null && iterations < maxIterations) {
+    const varName = match[1].substring(2);
+    const fallback = match[2];
+
+    const varValue = cssVariables.get(varName);
+
+    if (varValue) {
+      resolved = resolved.replace(match[0], varValue.value);
+    } else if (fallback) {
+      resolved = resolved.replace(match[0], fallback.trim());
+    }
+
+    varRegex.lastIndex = 0;
+    iterations++;
+  }
+
+  return resolved;
+}

@@ -1,9 +1,12 @@
 import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
 import { parseHTMLDocument } from "./htmlParser";
 import { parseReactDocument } from "./reactParser";
 import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
-import { parseCSSStyles } from "./cssParser";
+import { parseCSSStyles, parseCSSVariables } from "./cssParser";
+import { resolveCSSVariable } from "./styleParser";
 
 const SUPPORTED_LANGUAGES = ["html", "php", "vue", "svelte", "astro", "typescriptreact", "javascriptreact", "razor", "handlebars", "ejs"];
 
@@ -56,23 +59,41 @@ export function activate(context: vscode.ExtensionContext) {
     const { elements } = isReactFile ? parseReactDocument(editor.document) : parseHTMLDocument(editor.document);
     
     let classColorMap: Map<string, import("./cssParser").ClassColorDefinition> | undefined;
+    let cssVariablesMap: Map<string, import("./cssParser").CSSVariableDefinition> | undefined;
     
     if (settings.enableClassHighlighting) {
       const cssContent = extractCSSFromDocument(editor.document);
       classColorMap = parseCSSStyles(cssContent);
+      cssVariablesMap = parseCSSVariables(cssContent);
     }
     
-    decorationManager.applyDecorations(editor, elements, settings, classColorMap);
+    decorationManager.applyDecorations(editor, elements, settings, classColorMap, cssVariablesMap);
   };
 
   function extractCSSFromDocument(document: vscode.TextDocument): string {
     const text = document.getText();
+    let cssContent = "";
+
     const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
     let match;
-    let cssContent = "";
 
     while ((match = styleRegex.exec(text)) !== null) {
       cssContent += match[1] + "\n";
+    }
+
+    const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi;
+    let linkMatch;
+
+    while ((linkMatch = linkRegex.exec(text)) !== null) {
+      const href = linkMatch[1];
+      const cssPath = path.join(path.dirname(document.uri.fsPath), href);
+
+      try {
+        const cssText = fs.readFileSync(cssPath, "utf-8");
+        cssContent += cssText + "\n";
+      } catch (error) {
+        console.log(`Could not read CSS file: ${cssPath}`, error);
+      }
     }
 
     return cssContent;

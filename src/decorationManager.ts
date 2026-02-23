@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import { convertToRGBA } from "./colorConverter";
 import { HTMLElement, getElementTextRange, getElementFullRange } from "./htmlParser";
 import { ColorFlowSettings, HighlightMode } from "./settingsManager";
-import { ClassColorDefinition } from "./cssParser";
+import { ClassColorDefinition, CSSVariableDefinition } from "./cssParser";
+import { resolveCSSVariable } from "./styleParser";
 
 export class DecorationManager {
   private decorationCache: Map<string, vscode.TextEditorDecorationType> = new Map();
@@ -14,7 +15,8 @@ export class DecorationManager {
     editor: vscode.TextEditor,
     elements: HTMLElement[],
     settings: ColorFlowSettings,
-    classColorMap?: Map<string, ClassColorDefinition>
+    classColorMap?: Map<string, ClassColorDefinition>,
+    cssVariablesMap?: Map<string, CSSVariableDefinition>
   ): void {
     if (!settings.enabled) {
       this.clearDecorations(editor);
@@ -24,7 +26,12 @@ export class DecorationManager {
     const decorationsByColor: Map<string, vscode.Range[]> = new Map();
 
     for (const element of elements) {
-      const effectiveColor = this.getEffectiveColor(element, classColorMap, settings.enableClassHighlighting);
+      const effectiveColor = this.getEffectiveColor(
+        element,
+        classColorMap,
+        cssVariablesMap,
+        settings.enableClassHighlighting
+      );
 
       if (!effectiveColor) {
         continue;
@@ -60,6 +67,7 @@ export class DecorationManager {
   private getEffectiveColor(
     element: HTMLElement,
     classColorMap?: Map<string, ClassColorDefinition>,
+    cssVariablesMap?: Map<string, CSSVariableDefinition>,
     enableClassHighlighting?: boolean
   ): string | null {
     let colorValue: string | null = null;
@@ -70,15 +78,31 @@ export class DecorationManager {
       colorValue = element.colors.backgroundColor;
     }
 
+    if (cssVariablesMap && colorValue) {
+      colorValue = resolveCSSVariable(colorValue, cssVariablesMap);
+    }
+
     if (enableClassHighlighting && classColorMap && element.classes.length > 0 && !colorValue) {
       for (const className of element.classes) {
         const classDef = classColorMap.get(className);
         if (classDef) {
-          if (classDef.color && !colorValue) {
-            colorValue = classDef.color;
+          let classColor = classDef.color;
+          let classBgColor = classDef.backgroundColor;
+
+          if (cssVariablesMap) {
+            if (classColor) {
+              classColor = resolveCSSVariable(classColor, cssVariablesMap);
+            }
+            if (classBgColor) {
+              classBgColor = resolveCSSVariable(classBgColor, cssVariablesMap);
+            }
           }
-          if (!colorValue && classDef.backgroundColor) {
-            colorValue = classDef.backgroundColor;
+
+          if (classColor && !colorValue) {
+            colorValue = classColor;
+          }
+          if (!colorValue && classBgColor) {
+            colorValue = classBgColor;
           }
         }
       }
@@ -89,7 +113,12 @@ export class DecorationManager {
     }
 
     if (element.parent) {
-      return this.getEffectiveColor(element.parent, classColorMap, enableClassHighlighting);
+      return this.getEffectiveColor(
+        element.parent,
+        classColorMap,
+        cssVariablesMap,
+        enableClassHighlighting
+      );
     }
 
     return null;

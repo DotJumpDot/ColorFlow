@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Variables Import Test</title>
+    <link rel="stylesheet" href="css-variables.css">
+    <style>
+        .inline-var {
+            color: var(--primary-color);
+        }
+
+        .mixed-inline {
+            color: var(--secondary-color);
+            background-color: var(--warning-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSS Variables Import Test</h1>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Basic Text Colors (from imported CSS)</h2>
+            <p class="basic-text">This text uses basic text color variable (--text-color)</p>
+            <p class="primary-text">This text uses primary color variable (--primary-color)</p>
+            <p class="secondary-text">This text uses secondary color variable (--secondary-color)</p>
+            <p class="accent-text">This text uses accent color variable (--accent-color)</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Semantic Colors (from imported CSS)</h2>
+            <p class="warning-text">Warning text using --warning-color</p>
+            <p class="success-text">Success text using --success-color</p>
+            <p class="danger-text">Danger text using --danger-color</p>
+            <p class="info-text">Info text using --info-color</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Additional Colors (from imported CSS)</h2>
+            <p class="purple-text">Purple text using --purple</p>
+            <p class="teal-text">Teal text using --teal</p>
+            <p class="orange-text">Orange text using --orange</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Background Colors (from imported CSS)</h2>
+            <div class="light-bg" style="padding: 10px; margin: 5px;">
+                Light background with text color
+            </div>
+            <div class="primary-bg" style="padding: 10px; margin: 5px;">
+                Primary background with white text
+            </div>
+            <div class="secondary-bg" style="padding: 10px; margin: 5px;">
+                Secondary background with white text
+            </div>
+            <div class="accent-bg" style="padding: 10px; margin: 5px;">
+                Accent background with white text
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Inline Styles with CSS Variables</h2>
+            <p style="color: var(--primary-color);">Inline style with primary color</p>
+            <p style="color: var(--secondary-color);">Inline style with secondary color</p>
+            <p style="color: var(--accent-color);">Inline style with accent color</p>
+            <p style="background-color: var(--warning-color); color: white; padding: 10px;">Inline style with warning background</p>
+            <p style="background-color: var(--success-color); color: white; padding: 10px;">Inline style with success background</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Class-based CSS Variables (inline style tag)</h2>
+            <p class="inline-var">This uses class with CSS variable in inline style</p>
+            <p class="mixed-inline">This uses class with mixed CSS variables</p>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Nested Elements with CSS Variables</h2>
+            <div style="color: var(--primary-color);">
+                <p>Parent with primary color</p>
+                <p>Child element inherits color</p>
+                <span>Span also inherits</span>
+            </div>
+            <div style="background-color: var(--secondary-color); color: white; padding: 10px; margin-top: 10px;">
+                <p>Parent with secondary background</p>
+                <p>Child elements inherit</p>
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Combined - Imported CSS + Inline Variables</h2>
+            <div class="primary-text" style="background-color: var(--light-bg); padding: 10px;">
+                Imported class color + inline background variable
+            </div>
+            <div class="success-bg" style="color: var(--text-color);">
+                Imported background + inline color variable
+            </div>
+        </section>
+
+        <section style="margin: 20px; padding: 15px;">
+            <h2>Multiple Variables in One Style</h2>
+            <p style="border-left: 4px solid var(--primary-color); border-right: 4px solid var(--secondary-color); padding: 10px;">
+                This has left border from --primary-color and right border from --secondary-color
+            </p>
+            <div style="background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); color: white; padding: 20px; margin: 10px;">
+                This uses CSS variables in gradient
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -3,6 +3,7 @@ import {
   extractColorProperties,
   isColorProperty,
   getStyleProperties,
+  resolveCSSVariable,
   ParsedStyles,
   StyleProperty,
 } from "../src/styleParser";
@@ -156,6 +157,85 @@ describe("styleParser", () => {
         { property: "padding", value: "10px" },
         { property: "color", value: "red" },
       ]);
+    });
+  });
+
+  describe("resolveCSSVariable", () => {
+    test("should resolve single CSS variable", () => {
+      const cssVariables = new Map([
+        ["primary-color", { name: "primary-color", value: "#ff0000" }],
+        ["text-color", { name: "text-color", value: "#333333" }],
+      ]);
+      const result = resolveCSSVariable("var(--primary-color)", cssVariables);
+      expect(result).toBe("#ff0000");
+    });
+
+    test("should resolve CSS variable with fallback", () => {
+      const cssVariables = new Map([
+        ["primary-color", { name: "primary-color", value: "#ff0000" }],
+      ]);
+      const result = resolveCSSVariable("var(--missing-color, #ff5733)", cssVariables);
+      expect(result).toBe("#ff5733");
+    });
+
+    test("should resolve nested CSS variables", () => {
+      const cssVariables = new Map([
+        ["base-color", { name: "base-color", value: "#ff0000" }],
+        ["derived-color", { name: "derived-color", value: "var(--base-color)" }],
+      ]);
+      const result = resolveCSSVariable("var(--derived-color)", cssVariables);
+      expect(result).toBe("#ff0000");
+    });
+
+    test("should handle multiple CSS variables in one value", () => {
+      const cssVariables = new Map([
+        ["primary", { name: "primary", value: "#ff0000" }],
+        ["secondary", { name: "secondary", value: "#00ff00" }],
+      ]);
+      const result = resolveCSSVariable("var(--primary) var(--secondary)", cssVariables);
+      expect(result).toBe("#ff0000 #00ff00");
+    });
+
+    test("should return original value when variable not found and no fallback", () => {
+      const cssVariables = new Map([
+        ["primary-color", { name: "primary-color", value: "#ff0000" }],
+      ]);
+      const result = resolveCSSVariable("var(--missing-color)", cssVariables);
+      expect(result).toBe("var(--missing-color)");
+    });
+
+    test("should handle CSS variables with hyphens and underscores", () => {
+      const cssVariables = new Map([
+        ["my-color-1", { name: "my-color-1", value: "#ff0000" }],
+        ["color_var_2", { name: "color_var_2", value: "#00ff00" }],
+      ]);
+      const result = resolveCSSVariable("var(--my-color-1)", cssVariables);
+      expect(result).toBe("#ff0000");
+    });
+
+    test("should handle mixed content with CSS variables", () => {
+      const cssVariables = new Map([
+        ["primary-color", { name: "primary-color", value: "#ff0000" }],
+      ]);
+      const result = resolveCSSVariable("border: 1px solid var(--primary-color)", cssVariables);
+      expect(result).toBe("border: 1px solid #ff0000");
+    });
+
+    test("should prevent infinite loops in nested variables", () => {
+      const cssVariables = new Map([
+        ["color-1", { name: "color-1", value: "var(--color-2)" }],
+        ["color-2", { name: "color-2", value: "var(--color-1)" }],
+      ]);
+      const result = resolveCSSVariable("var(--color-1)", cssVariables);
+      expect(result).toBe("var(--color-1)");
+    });
+
+    test("should resolve CSS variable in rgba format", () => {
+      const cssVariables = new Map([
+        ["primary-color", { name: "primary-color", value: "255, 0, 0" }],
+      ]);
+      const result = resolveCSSVariable("rgba(var(--primary-color), 0.5)", cssVariables);
+      expect(result).toBe("rgba(255, 0, 0, 0.5)");
     });
   });
 });

@@ -37,9 +37,11 @@ Color Flow enhances your HTML development experience by automatically detecting 
 
 - 🎯 **Automatic Detection** - Instantly identifies inline CSS colors as you type
 - 🎨 **Multiple Color Formats** - Supports named colors, hex, rgb/rgba, hsl/hsla
-- 🏷️ **Class Highlighting** - Highlights colors defined in CSS classes within `<style>` tags
+- 🏷️ **Class Highlighting** - Highlights colors defined in CSS classes within `<style>` tags and linked CSS files
+- 🎭 **CSS Variables** - Parse and resolve CSS custom properties like `var(--my-color)` with fallback support
+- 📂 **External CSS Files** - Reads and resolves CSS from linked `<link rel="stylesheet">` files
 - ⚙️ **Flexible Highlighting** - Choose from full-line, word-only, or character-range modes
-- 🎭 **Customizable Appearance** - Adjust opacity, borders, and border radius to match your style
+- 🎨 **Customizable Appearance** - Adjust opacity, borders, and border radius to match your style
 - ⚡ **Real-time Updates** - See changes instantly as you edit your code
 - 🔄 **Quick Toggle** - Enable/disable with a single command or status bar click
 - 📊 **Status Bar Indicator** - Visual feedback showing current extension state

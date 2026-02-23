@@ -2,8 +2,8 @@ Based on your current Color Flow extension, here are some feature ideas organize
 
 ## 🎨 Color Enhancement Features
 
-1. CSS Variables Support - Parse and resolve var(--my-color) definitions
-2. External CSS Files - Parse linked <link rel="stylesheet"> files
+1. CSS Variables Support - Parse and resolve var(--my-color) definitions - done
+2. External CSS Files - Parse linked <link rel="stylesheet"> files - done
 3. Gradient Highlighting - Support linear-gradient, radial-gradient visualization
 4. Advanced Color Formats - Add LCH, OKLCH, CMYK support
 5. Color Blending - Visualize mix-blend-mode effects

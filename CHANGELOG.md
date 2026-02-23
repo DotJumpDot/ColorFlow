@@ -13,6 +13,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Handlebars Support**: Full support for `.hbs` files with template syntax
 - **EJS Support**: Added support for `.ejs` (Embedded JavaScript templates)
 - **Template Engine Compatibility**: Enhanced parser to work with various template languages and frameworks
+- **CSS Variables Support**: Parse and resolve CSS custom properties (variables) like `var(--my-color)`
+  - Extracts CSS variables from `:root` and style definitions
+  - Resolves `var(--variable-name)` references in inline styles and class-based colors
+  - Supports fallback values: `var(--variable, fallback-color)`
+  - Handles variable references in both color and background-color properties
+- **External CSS Files Support**: Parse and resolve CSS from linked `<link rel="stylesheet">` files
+  - Reads external CSS files from the filesystem
+  - Combines external CSS with inline `<style>` tags for variable resolution
+  - Enables CSS variables defined in external stylesheets to work with color highlighting
 
 ## [1.4.5] - 2026-02-23
 

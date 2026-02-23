@@ -1,0 +1,128 @@
+:root {
+  --primary-color: #ff0000;
+  --secondary-color: #00ff00;
+  --accent-color: #0000ff;
+  --text-color: #333333;
+  --light-bg: #f5f5f5;
+  --warning-color: #ff9800;
+  --success-color: #4caf50;
+  --danger-color: #f44336;
+  --info-color: #2196f3;
+  --purple: #9c27b0;
+  --teal: #009688;
+  --orange: #ff5722;
+}
+
+.basic-text {
+  color: var(--text-color);
+}
+
+.primary-text {
+  color: var(--primary-color);
+}
+
+.secondary-text {
+  color: var(--secondary-color);
+}
+
+.accent-text {
+  color: var(--accent-color);
+}
+
+.warning-text {
+  color: var(--warning-color);
+}
+
+.success-text {
+  color: var(--success-color);
+}
+
+.danger-text {
+  color: var(--danger-color);
+}
+
+.info-text {
+  color: var(--info-color);
+}
+
+.purple-text {
+  color: var(--purple);
+}
+
+.teal-text {
+  color: var(--teal);
+}
+
+.orange-text {
+  color: var(--orange);
+}
+
+.light-bg {
+  background-color: var(--light-bg);
+  color: var(--text-color);
+}
+
+.primary-bg {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.secondary-bg {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.accent-bg {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.warning-bg {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.success-bg {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.danger-bg {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.info-bg {
+  background-color: var(--info-color);
+  color: white;
+}
+
+.purple-bg {
+  background-color: var(--purple);
+  color: white;
+}
+
+.teal-bg {
+  background-color: var(--teal);
+  color: white;
+}
+
+.orange-bg {
+  background-color: var(--orange);
+  color: white;
+}
+
+.mixed-primary {
+  color: var(--text-color);
+  background-color: var(--primary-color);
+}
+
+.mixed-secondary {
+  color: var(--text-color);
+  background-color: var(--secondary-color);
+}
+
+.mixed-accent {
+  color: var(--text-color);
+  background-color: var(--accent-color);
+}
