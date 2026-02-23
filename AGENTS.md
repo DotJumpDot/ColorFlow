@@ -284,7 +284,7 @@ Parses an HTML document and extracts elements with inline styles.
 - Uses `document.positionAt()` for accurate character-based positioning
 - Captures `startIndex` and `endIndex` from htmlparser2 for precise range calculation
 - Handles multiline text content correctly
-- Supports HTML, PHP, Vue, Svelte, TSX, and JSX files
+- Supports HTML, PHP, Vue, Svelte, Astro, TSX, JSX, Razor, Handlebars, and EJS files
 
 **Example:**
 
@@ -704,8 +704,12 @@ Main activation function called when the extension is loaded.
 - PHP
 - Vue
 - Svelte
+- Astro
 - TypeScript React (typescriptreact)
 - JavaScript React (javascriptreact)
+- Razor
+- Handlebars
+- EJS
 
 **Example:**
 

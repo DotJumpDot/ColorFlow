@@ -2,7 +2,7 @@
   "name": "color-flow",
   "displayName": "Color Flow",
   "description": "Visualize CSS colors in HTML documents with configurable background highlighting",
-  "version": "1.4.5",
+  "version": "1.5.0",
   "publisher": "DotJumpDot",
   "icon": "assets/icon.png",
   "engines": {
@@ -27,8 +27,12 @@
     "onLanguage:php",
     "onLanguage:vue",
     "onLanguage:svelte",
+    "onLanguage:astro",
     "onLanguage:typescriptreact",
     "onLanguage:javascriptreact",
+    "onLanguage:razor",
+    "onLanguage:handlebars",
+    "onLanguage:ejs",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",

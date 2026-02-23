@@ -4,6 +4,16 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.0] - 2026-02-23
+
+### Added
+
+- **Astro File Support**: Full support for `.astro` files with component syntax
+- **Blazor Support**: Added support for Razor files (`.razor`) for Microsoft's web framework
+- **Handlebars Support**: Full support for `.hbs` files with template syntax
+- **EJS Support**: Added support for `.ejs` (Embedded JavaScript templates)
+- **Template Engine Compatibility**: Enhanced parser to work with various template languages and frameworks
+
 ## [1.4.5] - 2026-02-23
 
 ### Fixed

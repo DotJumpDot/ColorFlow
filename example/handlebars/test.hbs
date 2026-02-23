@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Handlebars Color Flow Test</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Handlebars Color Flow Test</h1>
+
+        <!-- Basic Colors -->
+        <div style="margin: 10px; padding: 15px;">
+            <p style="color: red">This text is red</p>
+            <p style="color: blue">This text is blue</p>
+            <p style="color: green">This text is green</p>
+            <p style="color: #ff5733">This text is coral using hex</p>
+            <p style="color: rgb(147, 112, 219)">This text is purple using rgb</p>
+        </div>
+
+        <!-- Background Colors -->
+        <div style="margin: 10px; padding: 15px;">
+            <p style="background-color: #ffcccc">This has red background</p>
+            <p style="background-color: #ccffcc">This has green background</p>
+            <p style="background-color: #ccccff">This has blue background</p>
+        </div>
+
+        <!-- Both Color and Background -->
+        <div style="margin: 10px; padding: 15px;">
+            <p style="color: white; background-color: #ff0000">White text on red background</p>
+            <p style="color: black; background-color: #ffff00">Black text on yellow background</p>
+        </div>
+
+        <!-- Nested Elements -->
+        <div style="margin: 10px; padding: 15px;">
+            <div style="color: purple">
+                <p>This paragraph inherits purple color</p>
+                <span>This span also inherits purple</span>
+                <strong>This strong tag also inherits purple</strong>
+            </div>
+        </div>
+
+        <!-- Multiple Styles -->
+        <div style="margin: 10px; padding: 15px;">
+            <p style="color: blue; font-weight: bold; font-size: 18px;">
+                Blue bold text with 18px size
+            </p>
+            <p style="color: orange; font-style: italic; text-decoration: underline;">
+                Orange italic underlined text
+            </p>
+        </div>
+
+        <!-- Handlebars Conditionals -->
+        {{#if showColors}}
+            <div style="margin: 10px; padding: 15px; background-color: #e8f5e9;">
+                <p style="color: #2e7d32">This conditional block is green themed</p>
+            </div>
+        {{/if}}
+
+        <!-- Handlebars Each Loop -->
+        {{#each items}}
+            <div style="background-color: #f5f5f5; margin: 5px; padding: 10px; border-radius: 4px;">
+                <span style="color: #333">{{this.name}}</span>
+                <span style="color: #666; font-size: 14px;"> - {{this.description}}</span>
+            </div>
+        {{/each}}
+
+        <!-- Handlebars Variables -->
+        <div style="margin: 10px; padding: 15px;">
+            <p style="color: teal">Welcome, {{username}}!</p>
+            <p style="color: #0066cc">Your status: {{status}}</p>
+        </div>
+
+        <button style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px;">
+            {{buttonText}}
+        </button>
+    </div>
+</body>
+</html>

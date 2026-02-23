@@ -43,7 +43,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 - ⚡ **Real-time Updates** - See changes instantly as you edit your code
 - 🔄 **Quick Toggle** - Enable/disable with a single command or status bar click
 - 📊 **Status Bar Indicator** - Visual feedback showing current extension state
-- 🌐 **Multi-language Support** - Works with HTML, PHP, Vue, Svelte, TSX, and JSX
+- 🌐 **Multi-language Support** - Works with HTML, PHP, Vue, Svelte, Astro, TSX, JSX, Razor, Handlebars, and EJS
 
 ---
 
@@ -54,7 +54,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.4.5                                                                                   |
+| **Version**        | 1.5.0                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---
@@ -262,8 +262,12 @@ Color Flow works seamlessly with the following file types and languages:
 - 🐘 **PHP** - PHP files with HTML content (`.php`)
 - 💚 **Vue** - Vue Single File Components (`.vue`)
 - 🔥 **Svelte** - Svelte components (`.svelte`)
+- 🌟 **Astro** - Astro components (`.astro`)
 - ⚛️ **TypeScript React** - TSX files (`.tsx`)
 - ⚛️ **JavaScript React** - JSX files (`.jsx`)
+- 🔵 **Razor** - Blazor files (`.razor`)
+- 📝 **Handlebars** - Handlebars templates (`.hbs`)
+- 🔧 **EJS** - Embedded JavaScript templates (`.ejs`)
 
 ---
 

@@ -5,7 +5,7 @@ import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
 import { parseCSSStyles } from "./cssParser";
 
-const SUPPORTED_LANGUAGES = ["html", "php", "vue", "svelte", "typescriptreact", "javascriptreact"];
+const SUPPORTED_LANGUAGES = ["html", "php", "vue", "svelte", "astro", "typescriptreact", "javascriptreact", "razor", "handlebars", "ejs"];
 
 let settingsManager: SettingsManager;
 let decorationManager: DecorationManager;
