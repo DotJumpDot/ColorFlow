@@ -4,6 +4,25 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.0] - 2026-02-24
+
+### Added
+
+- **CSS @import Support**: Full support for CSS `@import` statements in `<style>` tags and external CSS files
+  - Parses `@import url("file.css")` and `@import "file.css"` syntax
+  - Recursively loads nested @import statements
+  - Supports both relative and absolute paths
+  - Merges imported CSS variables and class styles with main document
+  - Works with existing `<link rel="stylesheet">` support
+- **New Test Coverage**: Added comprehensive test suite for `@import` extraction with 11 test cases
+- **Example Files**: Added `css-import.html` and `imported-styles.css` demonstrating @import usage
+
+### Changed
+
+- **CSS Extraction**: Enhanced `extractCSSFromDocument` function to handle @import statements in style tags
+- **CSS Parser**: Added `extractCSSImports` function and `CSSImport` interface
+- **External CSS Loading**: Implemented recursive `loadCSSFromImport` function for nested imports
+
 ## [1.5.4] - 2026-02-24
 
 ### Added

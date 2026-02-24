@@ -328,6 +328,38 @@ console.log(variables.get("secondary-color")); // { name: "secondary-color", val
 
 ---
 
+### `extractCSSImports(cssText: string): CSSImport[]`
+
+Extracts CSS `@import` statements from CSS text.
+
+**Parameters:**
+
+- `cssText` (string): CSS text content
+
+**Returns:**
+
+- `CSSImport[]`: Array of import objects with URLs
+
+**Behavior:**
+
+- Uses regex to match `@import url("file.css")` and `@import "file.css"` syntax
+- Case-insensitive matching for `@import` keyword
+- Handles both `url()` function and string notation
+- Supports quotes (single, double) and no quotes
+- Works with media queries in @import statements
+
+**Example:**
+
+```typescript
+const css = `@import "reset.css";
+@import url("variables.css");
+@import 'components.css';`;
+const imports = extractCSSImports(css);
+console.log(imports); // [{ url: "reset.css" }, { url: "variables.css" }, { url: "components.css" }]
+```
+
+---
+
 ## HTMLParser Module
 
 ### `parseHTMLDocument(document: vscode.TextDocument): ParseResult`
@@ -789,7 +821,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 ### `extractCSSFromDocument(document: vscode.TextDocument): string`
 
-Extracts CSS content from both inline `<style>` tags and linked external CSS files.
+Extracts CSS content from inline `<style>` tags, linked external CSS files, and CSS `@import` statements.
 
 **Parameters:**
 
@@ -797,13 +829,16 @@ Extracts CSS content from both inline `<style>` tags and linked external CSS fil
 
 **Returns:**
 
-- `string`: Combined CSS content from all sources
+- `string`: Combined CSS content from all sources including imported stylesheets
 
 **Behavior:**
 
 - Extracts CSS from `<style>` tags using regex pattern matching
 - Finds all `<link rel="stylesheet">` tags and extracts href attributes
+- Parses and loads CSS `@import` statements from both style tags and external files
 - Reads external CSS files from the filesystem using Node.js `fs` module
+- Recursively processes nested `@import` statements
+- Supports both relative and absolute paths for @import URLs
 - Combines all CSS content for variable and class resolution
 - Handles errors gracefully if external CSS files cannot be read
 
@@ -811,10 +846,10 @@ Extracts CSS content from both inline `<style>` tags and linked external CSS fil
 
 ```typescript
 const cssContent = extractCSSFromDocument(editor.document);
-// Returns CSS from both <style> tags and linked CSS files
+// Returns CSS from <style> tags, linked CSS files, and @import statements
 ```
 
-**Note:** This function enables CSS variables and class-based colors defined in external stylesheets to work with Color Flow highlighting.
+**Note:** This function enables CSS variables and class-based colors defined in external stylesheets and @import statements to work with Color Flow highlighting.
 
 ---
 
@@ -918,6 +953,14 @@ interface ClassColorDefinition {
   className: string;
   color?: string;
   backgroundColor?: string;
+}
+```
+
+### `CSSImport`
+
+```typescript
+interface CSSImport {
+  url: string;
 }
 ```
 

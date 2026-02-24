@@ -1,6 +1,8 @@
 import {
   parseCSSStyles,
   parseCSSVariables,
+  extractCSSImports,
+  CSSImport,
   ClassColorDefinition,
   CSSVariableDefinition,
 } from "../src/cssParser";
@@ -203,6 +205,87 @@ describe("cssParser", () => {
       const result = parseCSSVariables(css);
       expect(result.get("primary")).toEqual({ name: "primary", value: "#ff0000" });
       expect(result.get("secondary")).toEqual({ name: "secondary", value: "var(--primary, #00ff00)" });
+    });
+  });
+
+  describe("extractCSSImports", () => {
+    test("should extract @import with url()", () => {
+      const css = '@import url("styles.css");';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("styles.css");
+    });
+
+    test("should extract @import with string", () => {
+      const css = "@import 'theme.css';";
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("theme.css");
+    });
+
+    test("should extract @import with double quotes", () => {
+      const css = '@import "imported.css";';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("imported.css");
+    });
+
+    test("should extract multiple @import statements", () => {
+      const css = `@import "reset.css";
+@import url("variables.css");
+@import 'components.css';`;
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(3);
+      expect(result[0].url).toBe("reset.css");
+      expect(result[1].url).toBe("variables.css");
+      expect(result[2].url).toBe("components.css");
+    });
+
+    test("should handle @import with media queries", () => {
+      const css = '@import url("print.css") print;';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("print.css");
+    });
+
+    test("should handle @import without semicolon", () => {
+      const css = '@import url("styles.css")';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("styles.css");
+    });
+
+    test("should handle @import with relative paths", () => {
+      const css = '@import "../styles/theme.css";';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("../styles/theme.css");
+    });
+
+    test("should handle @import with absolute paths", () => {
+      const css = '@import "/assets/styles.css";';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("/assets/styles.css");
+    });
+
+    test("should ignore case of @import", () => {
+      const css = '@IMPORT url("uppercase.css");';
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(1);
+      expect(result[0].url).toBe("uppercase.css");
+    });
+
+    test("should handle empty CSS", () => {
+      const css = "";
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(0);
+    });
+
+    test("should handle CSS without imports", () => {
+      const css = ".red { color: red; } .blue { color: blue; }";
+      const result = extractCSSImports(css);
+      expect(result).toHaveLength(0);
     });
   });
 });

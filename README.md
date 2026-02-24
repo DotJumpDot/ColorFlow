@@ -56,7 +56,7 @@ Color Flow enhances your HTML development experience by automatically detecting 
 | **Name**           | Color Flow                                                                              |
 | **Publisher**      | DotJumpDot                                                                              |
 | **Extension ID**   | `DotJumpDot.color-flow`                                                                 |
-| **Version**        | 1.5.4                                                                                   |
+| **Version**        | 1.6.0                                                                                   |
 | **VS Marketplace** | [Color Flow](https://marketplace.visualstudio.com/items?itemName=DotJumpDot.color-flow) |
 
 ---

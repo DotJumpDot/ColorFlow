@@ -6,7 +6,7 @@ import { parseReactDocument } from "./reactParser";
 import { parseSvelteDocument } from "./svelteParser";
 import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
-import { parseCSSStyles, parseCSSVariables } from "./cssParser";
+import { parseCSSStyles, parseCSSVariables, extractCSSImports } from "./cssParser";
 import { resolveCSSVariable } from "./styleParser";
 
 const SUPPORTED_LANGUAGES = ["html", "php", "vue", "svelte", "astro", "typescriptreact", "javascriptreact", "razor", "handlebars", "ejs"];
@@ -85,7 +85,16 @@ export function activate(context: vscode.ExtensionContext) {
     let match;
 
     while ((match = styleRegex.exec(text)) !== null) {
-      cssContent += match[1] + "\n";
+      const styleContent = match[1];
+      cssContent += styleContent + "\n";
+      
+      const imports = extractCSSImports(styleContent);
+      for (const importItem of imports) {
+        const importedCSS = loadCSSFromImport(importItem.url, document.uri.fsPath);
+        if (importedCSS) {
+          cssContent += importedCSS + "\n";
+        }
+      }
     }
 
     const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi;
@@ -98,12 +107,49 @@ export function activate(context: vscode.ExtensionContext) {
       try {
         const cssText = fs.readFileSync(cssPath, "utf-8");
         cssContent += cssText + "\n";
+        
+        const imports = extractCSSImports(cssText);
+        for (const importItem of imports) {
+          const importedCSS = loadCSSFromImport(importItem.url, cssPath);
+          if (importedCSS) {
+            cssContent += importedCSS + "\n";
+          }
+        }
       } catch (error) {
         console.log(`Could not read CSS file: ${cssPath}`, error);
       }
     }
 
     return cssContent;
+  }
+
+  function loadCSSFromImport(importUrl: string, basePath: string): string | null {
+    let cssPath: string;
+    
+    if (path.isAbsolute(importUrl)) {
+      cssPath = importUrl;
+    } else {
+      cssPath = path.join(path.dirname(basePath), importUrl);
+    }
+
+    try {
+      const cssText = fs.readFileSync(cssPath, "utf-8");
+      
+      const imports = extractCSSImports(cssText);
+      let content = cssText;
+      
+      for (const importItem of imports) {
+        const importedCSS = loadCSSFromImport(importItem.url, cssPath);
+        if (importedCSS) {
+          content += "\n" + importedCSS;
+        }
+      }
+      
+      return content;
+    } catch (error) {
+      console.log(`Could not read CSS file from @import: ${cssPath}`, error);
+      return null;
+    }
   }
 
   const debouncedUpdate = (editor: vscode.TextEditor) => {

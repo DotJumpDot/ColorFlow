@@ -9,6 +9,10 @@ export interface CSSVariableDefinition {
   value: string;
 }
 
+export interface CSSImport {
+  url: string;
+}
+
 export function parseCSSStyles(cssText: string): Map<string, ClassColorDefinition> {
   const classColors = new Map<string, ClassColorDefinition>();
 
@@ -61,6 +65,22 @@ export function parseCSSVariables(cssText: string): Map<string, CSSVariableDefin
   }
 
   return variables;
+}
+
+export function extractCSSImports(cssText: string): CSSImport[] {
+  const imports: CSSImport[] = [];
+  
+  const importRegex = /@import\s+(?:url\()?["']([^"']+)["']\)?;?/gi;
+  let match;
+  
+  while ((match = importRegex.exec(cssText)) !== null) {
+    const url = match[1].trim();
+    if (url) {
+      imports.push({ url });
+    }
+  }
+  
+  return imports;
 }
 
 function extractCSSRules(cssText: string): CSSRule[] {
