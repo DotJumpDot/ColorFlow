@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { parseHTMLDocument } from "./htmlParser";
 import { parseReactDocument } from "./reactParser";
+import { parseSvelteDocument } from "./svelteParser";
 import { SettingsManager, ColorFlowSettings } from "./settingsManager";
 import { DecorationManager } from "./decorationManager";
 import { parseCSSStyles, parseCSSVariables } from "./cssParser";
@@ -56,7 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const isReactFile = languageId === "typescriptreact" || languageId === "javascriptreact";
-    const { elements } = isReactFile ? parseReactDocument(editor.document) : parseHTMLDocument(editor.document);
+    const isTemplateFile = languageId === "svelte" || languageId === "vue" || languageId === "astro";
+    
+    const { elements } = isReactFile 
+      ? parseReactDocument(editor.document) 
+      : isTemplateFile 
+        ? parseSvelteDocument(editor.document) 
+        : parseHTMLDocument(editor.document);
     
     let classColorMap: Map<string, import("./cssParser").ClassColorDefinition> | undefined;
     let cssVariablesMap: Map<string, import("./cssParser").CSSVariableDefinition> | undefined;

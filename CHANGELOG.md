@@ -4,6 +4,24 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.2] - 2026-02-24
+
+### Fixed
+
+- **Svelte/Vue Template Syntax Highlighting**: Fixed incorrect highlighting of Svelte and Vue template syntax like `{#if}`, `{/if}`, `{:else}`, `@render`, `@const`, `v-if`, `v-for`, etc. Control flow blocks are now properly ignored and only actual colored text content is highlighted
+- **Svelte Parser Implementation**: Created dedicated Svelte parser that intelligently sanitizes template syntax while preserving expressions for proper highlighting
+- **Background Property Support**: Added support for shorthand `background` property in style parser (was previously only supporting `background-color`)
+
+### Added
+
+- **Svelte Parser Tests**: Comprehensive unit tests for Svelte/Vue parsing covering:
+  - Control flow blocks ({#if}, {:else}, {/if}, etc.)
+  - Simple expressions ({variable}, {data.name})
+  - Inline styles with color and background properties
+  - Snippet syntax (@render, @const, @debug)
+  - Each blocks ({#each}, {:then}, {:catch})
+  - Await blocks
+
 ## [1.5.1] - 2026-02-23
 
 ### Changed

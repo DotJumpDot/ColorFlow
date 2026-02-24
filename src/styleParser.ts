@@ -38,14 +38,7 @@ export function extractColorProperties(styles: ParsedStyles): {
   color?: string;
   backgroundColor?: string;
 } {
-  const result: {
-    color?: string;
-    backgroundColor?: string;
-  } = {};
-
-  if (styles.color) {
-    result.color = styles.color;
-  }
+  const result: { color?: string; backgroundColor?: string } = {};
 
   if (styles["background-color"]) {
     result.backgroundColor = styles["background-color"];
@@ -53,6 +46,15 @@ export function extractColorProperties(styles: ParsedStyles): {
 
   if (styles.backgroundColor) {
     result.backgroundColor = styles.backgroundColor;
+  }
+
+  // Handle shorthand 'background' property
+  if (styles.background) {
+    result.backgroundColor = styles.background;
+  }
+
+  if (styles.color) {
+    result.color = styles.color;
   }
 
   return result;

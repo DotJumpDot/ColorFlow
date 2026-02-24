@@ -163,8 +163,8 @@ export class DecorationManager {
     const trimmed = text.trim();
     if (trimmed.length === 0) return true;
 
-    // Match sanitized JSX expressions (underscores representing {expression})
-    // These were originally JSX expressions and should NOT be filtered out
+    // Match sanitized JSX/Svelte expressions (underscores representing {expression})
+    // These were originally JSX/Svelte expressions and should NOT be filtered out
     if (/^_+$/.test(trimmed)) return false;
 
     // Match JSX expressions with single identifier (e.g., {title}, {children})
