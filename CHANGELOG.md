@@ -4,6 +4,26 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.4] - 2026-02-24
+
+### Added
+
+- **Hide Background Highlight Setting**: Added new "Hide Background Highlight" setting (default: false) that allows showing only border colors without background highlight when combined with "Enable Border" setting
+- **Border Size Setting**: Added new "Border Size" setting (default: "1px") to configure the width of the border around highlighted text
+- **Reordered Settings**: Reorganized settings in the following order:
+  1. Color Flow: Enabled
+  2. Color Flow: Enable Class Highlighting
+  3. Color Flow: Opacity
+  4. Color Flow: Hide Background Highlight
+  5. Color Flow: Enable Border
+  6. Color Flow: Border Color
+  7. Color Flow: Border Size
+  8. Color Flow: Border Radius
+
+### Changed
+
+- **Setting Order**: Improved settings UX by organizing options in a more logical order
+
 ## [1.5.3] - 2026-02-24
 
 ### Fixed

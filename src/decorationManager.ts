@@ -23,6 +23,11 @@ export class DecorationManager {
       return;
     }
 
+    if (settings.hideBackgroundHighlight && !settings.enableBorder) {
+      this.clearDecorations(editor);
+      return;
+    }
+
     const decorationsByColor: Map<string, vscode.Range[]> = new Map();
 
     for (const element of elements) {
@@ -255,16 +260,18 @@ export class DecorationManager {
       return this.decorationCache.get(backgroundColor)!;
     }
 
-    const decorationOptions: vscode.DecorationRenderOptions = {
-      backgroundColor: backgroundColor,
-    };
+    const decorationOptions: vscode.DecorationRenderOptions = {};
+
+    if (!settings.hideBackgroundHighlight) {
+      decorationOptions.backgroundColor = backgroundColor;
+    }
 
     if (settings.enableBorder) {
       const borderColor =
         settings.borderColor === "currentColor" ? backgroundColor : settings.borderColor;
 
       decorationOptions.borderColor = borderColor;
-      decorationOptions.borderWidth = "1px";
+      decorationOptions.borderWidth = settings.borderSize;
       decorationOptions.borderStyle = "solid";
     }
 

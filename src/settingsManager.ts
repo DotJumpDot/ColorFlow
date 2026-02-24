@@ -6,10 +6,12 @@ export interface ColorFlowSettings {
   opacity: number;
   enableBorder: boolean;
   borderColor: string;
+  borderSize: string;
   borderRadius: string;
   highlightMode: HighlightMode;
   enabled: boolean;
   enableClassHighlighting: boolean;
+  hideBackgroundHighlight: boolean;
 }
 
 export class SettingsManager {
@@ -30,10 +32,12 @@ export class SettingsManager {
       opacity: config.get<number>("opacity", 0.2),
       enableBorder: config.get<boolean>("enableBorder", false),
       borderColor: config.get<string>("borderColor", "currentColor"),
+      borderSize: config.get<string>("borderSize", "1px"),
       borderRadius: config.get<string>("borderRadius", "0px"),
       highlightMode: config.get<HighlightMode>("highlightMode", "char-range"),
       enabled: config.get<boolean>("enabled", true),
-      enableClassHighlighting: config.get<boolean>("enableClassHighlighting", false),
+      enableClassHighlighting: config.get<boolean>("enableClassHighlighting", true),
+      hideBackgroundHighlight: config.get<boolean>("hideBackgroundHighlight", false),
     };
   }
 

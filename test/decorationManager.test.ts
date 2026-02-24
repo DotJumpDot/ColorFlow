@@ -18,9 +18,11 @@ describe("decorationManager", () => {
       opacity: 0.15,
       enableBorder: false,
       borderColor: "currentColor",
+      borderSize: "1px",
       borderRadius: "0px",
       highlightMode: "char-range",
       enableClassHighlighting: true,
+      hideBackgroundHighlight: false,
     };
 
     test("should return false for JSX expressions with single identifier", () => {

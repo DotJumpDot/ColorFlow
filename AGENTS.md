@@ -897,9 +897,11 @@ interface ColorFlowSettings {
   opacity: number;
   enableBorder: boolean;
   borderColor: string;
+  borderSize: string;
   borderRadius: string;
   highlightMode: "full-line" | "word-only" | "char-range";
   enableClassHighlighting: boolean;
+  hideBackgroundHighlight: boolean;
 }
 ```
 

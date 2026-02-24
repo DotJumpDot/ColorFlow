@@ -2,7 +2,7 @@
   "name": "color-flow",
   "displayName": "Color Flow",
   "description": "Visualize CSS colors in HTML documents with configurable background highlighting",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "publisher": "DotJumpDot",
   "icon": "assets/icon.png",
   "engines": {
@@ -59,12 +59,22 @@
           "default": true,
           "description": "Enable color highlighting in HTML documents"
         },
+        "colorFlow.enableClassHighlighting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable highlighting for CSS classes defined in style tags"
+        },
         "colorFlow.opacity": {
           "type": "number",
           "default": 0.2,
           "minimum": 0,
           "maximum": 1,
           "description": "Opacity of the background color highlight (0-1)"
+        },
+        "colorFlow.hideBackgroundHighlight": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide background highlight and only show border (requires Enable Border to be true)"
         },
         "colorFlow.enableBorder": {
           "type": "boolean",
@@ -75,6 +85,11 @@
           "type": "string",
           "default": "currentColor",
           "description": "Border color for highlighted text (e.g., 'currentColor', '#000000', 'red', 'rgba(0,0,0,0.5)')"
+        },
+        "colorFlow.borderSize": {
+          "type": "string",
+          "default": "1px",
+          "description": "Border width for highlighted text (e.g., '1px', '2px', '3px')"
         },
         "colorFlow.borderRadius": {
           "type": "string",
@@ -95,11 +110,6 @@
             "Highlight exact element text range"
           ],
           "description": "Determines how much of the text to highlight"
-        },
-        "colorFlow.enableClassHighlighting": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable highlighting for CSS classes defined in style tags"
         }
       }
     }
