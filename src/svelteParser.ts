@@ -4,6 +4,31 @@ import { HTMLElement, ParseResult } from "./htmlParser";
 import { extractColorProperties, parseStyleString } from "./styleParser";
 
 /**
+ * Checks if an expression is complex code that should not be highlighted.
+ */
+function isComplexExpression(content: string): boolean {
+  if (content.includes("\n")) return true;
+  if (content.includes("=>")) return true;
+
+  const complexPatterns = [
+    "=>",
+    "function",
+    ".map(",
+    ".filter(",
+    ".reduce(",
+    "&&",
+    "||",
+    "?",
+    ";",
+    "return",
+    "const ",
+    "let ",
+    "var ",
+  ];
+  return complexPatterns.some((pattern) => content.includes(pattern));
+}
+
+/**
  * Sanitizes template syntax for both Svelte and Vue files.
  * - Svelte: { } blocks - entire control flow blocks replaced with spaces to prevent highlighting
  * - Simple expressions like {variable} are kept as-is
@@ -48,7 +73,7 @@ function sanitizeSvelte(text: string): string {
       inTag = false;
       sanitized += text[pos];
       pos++;
-    } else if (text[pos] === "{" && !inTag) {
+    } else if (text[pos] === "{") {
       let depth = 1;
       let j = pos + 1;
       let inString: string | null = null;
@@ -83,7 +108,10 @@ function sanitizeSvelte(text: string): string {
         }
       }
 
-      if (isControlFlow) {
+      // Check if this is a complex expression (like arrow functions)
+      const isComplex = isComplexExpression(content);
+
+      if (isControlFlow || isComplex || inTag) {
         // Replace entire control flow block with spaces
         sanitized += " ".repeat(j - pos + 1);
       } else {

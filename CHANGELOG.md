@@ -4,6 +4,13 @@ All notable changes to Color Flow will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.3] - 2026-02-24
+
+### Fixed
+
+- **Arrow Function Highlighting**: Fixed incorrect highlighting of arrow function expressions in Svelte/Vue attributes (e.g., `onclick={() => handleClick()}`, `onclick={(e) => handleDelete(e, id)}`). All `{}` blocks inside HTML tag attributes are now properly masked to prevent highlighting of complex code patterns
+- **Complex Expression Detection**: Enhanced `isComplexExpression` function to detect arrow functions (`=>`), method chains (`.map()`, `.filter()`), and other complex JavaScript patterns that should not be highlighted
+
 ## [1.5.2] - 2026-02-24
 
 ### Fixed

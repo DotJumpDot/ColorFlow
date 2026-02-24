@@ -150,4 +150,31 @@ describe("Svelte Parser", () => {
     // Should parse without errors
     expect(result.elements.length).toBeGreaterThan(0);
   });
+
+  it("should not highlight arrow function expressions", () => {
+    const svelteCode = `
+      <button onclick={() => handleClick()}>Click me</button>
+      <button onclick={(e) => handleDelete(e, id)}>Delete</button>
+      <button onclick={(e) => { e.preventDefault(); handleClick(); }} with block</button>
+    `;
+
+    const document = createMockDocument(svelteCode);
+    const result = parseSvelteDocument(document);
+
+    // Should parse elements without errors
+    expect(result.elements.length).toBeGreaterThan(0);
+    
+    // Arrow function expressions should not appear in text content
+    const buttons = result.elements.filter(el => el.tagName === "button");
+    expect(buttons.length).toBe(3);
+    
+    // Text content should only contain actual text, not arrow functions
+    buttons.forEach(button => {
+      const text = button.textContent?.trim();
+      expect(text).not.toContain("=>");
+      expect(text).not.toContain("handleClick");
+      expect(text).not.toContain("handleDelete");
+      expect(text).not.toContain("e.preventDefault");
+    });
+  });
 });
